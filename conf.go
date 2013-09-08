@@ -10,7 +10,7 @@ import (
 var Settings *UploadthisConfig
 
 type UploadthisConfig struct {
-	WatchDir string
+	WatchFile string
 }
 
 func LoadConfig(path string) {
