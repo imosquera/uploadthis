@@ -26,3 +26,10 @@ How to build the code:
   go build cmd/uploadthis.go
 
 
+ In short, the quickest way to get going with annotator is to include the following in the `<head>` of your document (paths relative to the repository root):
+
+    <script src='lib/vendor/jquery.js'></script>
+    <script src='lib/vendor/json2.js'></script>
+
+    <script src='pkg/annotator.min.js'></script>
+    <link rel='stylesheet' href='pkg/annotator.min.css'>
