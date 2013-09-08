@@ -20,6 +20,7 @@ Building
 =========
 
 How to build the code:
+
   go get github.com/imosquera/uploadthis
   cd $GOPATH/src/github.com/imosquera/uploadthis
   go build cmd/uploadthis.go
