@@ -10,6 +10,9 @@ import (
 var Settings *UploadthisConfig
 
 type UploadthisConfig struct {
+	Auth struct {
+		AccessKey, SecretKey string
+	}
 	WatchFile string
 }
 

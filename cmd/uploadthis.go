@@ -24,6 +24,6 @@ func main() {
 		Usage()
 	}
 
-	uploadthis.LoadConfig("sample-config.yaml")
-	println(uploadthis.Settings.WatchFile)
+	uploadthis.LoadConfig(configFile)
+	uploadthis.UploadFile(uploadthis.Settings.WatchFile)
 }
