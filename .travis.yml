@@ -2,7 +2,7 @@ language: go
 go: 1.1
 
 install:
-    - ./build.sh
+    - ./build.sh --non-interactive
 script:
     - go get -v ./...
     - $HOME/gopath/bin/gocov test -v | $HOME/gopath/bin/gocov report
