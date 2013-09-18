@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var Settings *UploadthisConfig
+var Settings UploadthisConfig
 
 var opts struct {
 	ConfigPath string `short:"c" long:"config" description:"config path"`
@@ -29,23 +29,23 @@ func ParseOpts() {
 	if opts.ConfigPath != "" {
 		loadConfig(opts.ConfigPath)
 	}
-	if opts.AccesssKey != "" {
+	if opts.AccesssKey != "" && opts.SecretKey != "" {
 		Settings.Auth.AccessKey = opts.AccesssKey
+		Settings.Auth.SecretKey = opts.SecretKey
 	}
 	if opts.SecretKey != "" {
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
 }
+
 func loadConfig(path string) {
-	Settings = new(UploadthisConfig)
 	file, err := os.Open(path) // For read access.
 	if err != nil {
 		log.Fatal(err)
 	}
 	configString, err := ioutil.ReadAll(file)
-	println(string(configString))
 	if err != nil {
 		log.Fatal(err)
 	}
-	goyaml.Unmarshal(configString, Settings)
+	goyaml.Unmarshal(configString, &Settings)
 }
