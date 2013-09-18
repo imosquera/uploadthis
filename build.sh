@@ -1,15 +1,19 @@
 #!/bin/bash
 
 setGOPATH() {
-    SET_GOPATH=""
-    while [ "$SET_GOPATH" == "" ]
-    do
-        echo -n "Please set your GOPATH (default: $HOME/gocode):"
-        read SET_GOPATH 
-    done
-
+    echo 
+    echo "GOPATH is a workspace where your go files, libraries and projects will be placed."
+    echo -e "\033[35mNOTE:\033[0m This must not be the same path as your Go installation. More info: http://golang.org/doc/code.html#GOPATH"
+    echo -n "Please set your GOPATH (default: $HOME/gocode):"
+    read SET_GOPATH 
+    if [ "$SET_GOPATH" = "" ]
+    then 
+        SET_GOPATH="$HOME/gocode"
+    fi
     export GOPATH="$SET_GOPATH"
+    mkdir -p $GOPATH
 
+   
     echo -n "Would you like to add GOPATH=$GOPATH to your ~/.bash_profile? (y/n):"
     read ADD_TO_PROFILE 
     if [ "$ADD_TO_PROFILE" = "y" ]
@@ -21,7 +25,7 @@ setGOPATH() {
 interactive() {
     if [ -z $GOPATH ] 
     then
-        echo "Your GOPATH is empty!"
+        echo -e '\033[33m'"Your GOPATH is not set!\033[0m";
         setGOPATH
     else
         echo -n "Using $GOPATH, Would you like to set a new one? (y/n): "
