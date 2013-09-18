@@ -1,5 +1,7 @@
 language: go
 go: 1.1
 
+before_script:
+    - go install github.com/axw/gocov
 script:
- - go test -v
+ - $GOPATH/bin/gocov test -v | $GOPATH/bin/gocov report
