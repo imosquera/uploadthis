@@ -4,4 +4,5 @@ go: 1.1
 install:
     - go get github.com/axw/gocov/gocov
 script:
- - $GOPATH/bin/gocov test -v | $GOPATH/bin/gocov report
+    - ls $GOPATH/bin
+    - $GOPATH/bin/gocov test -v | $GOPATH/bin/gocov report
