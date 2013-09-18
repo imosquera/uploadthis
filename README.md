@@ -4,7 +4,7 @@ uploadthis
 ==========
 A flexible, performant command line S3 uploader by your friends at ShareThis
 
-Quick Start
+Dev Quick Start
 ============
   To get started quickly: 
 
