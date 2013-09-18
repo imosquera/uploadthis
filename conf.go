@@ -24,15 +24,21 @@ type UploadthisConfig struct {
 	WatchFile string
 }
 
+//this is here for mocking purposes
+var optsParser = flags.Parse
+
 func ParseOpts() {
-	flags.Parse(&opts)
+	optsParser(&opts)
+
 	if opts.ConfigPath != "" {
 		loadConfig(opts.ConfigPath)
 	}
+
 	if opts.AccesssKey != "" && opts.SecretKey != "" {
 		Settings.Auth.AccessKey = opts.AccesssKey
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
+
 	if opts.SecretKey != "" {
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
