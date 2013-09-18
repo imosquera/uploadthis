@@ -1,8 +1,6 @@
 package uploadthis
 
-import (
-	"log"
-)
+import ()
 
 func UploadFile(file string) {
 	println(file)
