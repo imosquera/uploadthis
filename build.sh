@@ -25,6 +25,7 @@ setGOPATH() {
 interactive() {
     if [ -z $GOPATH ] 
     then
+        echo
         echo -e '\033[33m'"Your GOPATH is not set!\033[0m";
         setGOPATH
     else
