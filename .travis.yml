@@ -3,5 +3,6 @@ go: 1.1
 
 before_script:
     - go get github.com/axw/gocov/gocov
+    - go install github.com/axw/gocov/gocov
 script:
  - $GOPATH/bin/gocov test -v | $GOPATH/bin/gocov report

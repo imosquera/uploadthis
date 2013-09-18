@@ -39,9 +39,6 @@ func ParseOpts() {
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
 
-	if opts.SecretKey != "" {
-		Settings.Auth.SecretKey = opts.SecretKey
-	}
 }
 
 func loadConfig(path string) {
