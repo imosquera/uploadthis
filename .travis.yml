@@ -2,7 +2,7 @@ language: go
 go: 1.1
 
 install:
-    - go get github.com/axw/gocov/gocov
+    - build.sh
 script:
-    - go get ./...
+    - go get -v ./...
     - $HOME/gopath/bin/gocov test -v | $HOME/gopath/bin/gocov report
