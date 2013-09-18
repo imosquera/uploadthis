@@ -2,9 +2,13 @@
 
 uploadthis
 ==========
-
 A flexible, performant command line S3 uploader by your friends at ShareThis
 
+Quick Start
+============
+    To get started quickly: 
+
+        curl -fsSL https://raw.github.com/imosquera/uploadthis/master/build.sh -o /tmp/build.source && source /tmp/build.source
 
 Goal
 ====
@@ -25,4 +29,4 @@ Building
 
     go get github.com/imosquera/uploadthis
     cd $GOPATH/src/github.com/imosquera/uploadthis
-    go build cmd/uploadthis.go
+    go build ./...
