@@ -1,14 +1,14 @@
 package uploadthis
 
 import (
-	"errors"
 	"testing"
 )
 
-func TestParseOpts(t *testing.T) {
+func TestParseOptsAccessKey(t *testing.T) {
 	optsParser = func(interface{}) ([]string, error) {
-		println("DID CALL")
-		return []string{}, errors.New("")
+		opts.AccesssKey = "FAKE KEY"
+		opts.SecretKey = ""
+		return []string{}, nil
 	}
 	ParseOpts()
 }
