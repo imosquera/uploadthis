@@ -6,15 +6,6 @@ import (
 	"log"
 )
 
-type S3Mocker interface {
-	Bucket(name string) BucketMocker
-}
-type BucketMocker interface {
-	Name string
-	Get(path string) (data []byte, err error)
-	Put(path string, data []byte, contType string, perm ACL) error
-}
-
 var s3Conn *s3.S3
 
 var GetS3 = func() *s3.S3 {
@@ -25,24 +16,23 @@ var GetS3 = func() *s3.S3 {
 	return s3Conn
 }
 
-func UploadBuffer(bucket string, path string, data []byte) {
-	s := GetS3()
+func UploadBuffer(s *s3.S3, bucket string, path string, data []byte) error {
 	b := s.Bucket(bucket)
 	err := b.Put(path, data, "content-type", s3.Private)
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
+	return err
 }
 
-func DownloadBuffer(bucket string, path string) []byte {
-	s := GetS3()
+func DownloadBuffer(s *s3.S3, bucket string, path string) ([]byte, error) {
 	b := s.Bucket(bucket)
 	data, err := b.Get(path)
 	if err != nil {
-		log.Panic(err)
-		return []byte{}
+		log.Println(err)
+		return []byte{}, err
 	} else {
-		return data
+		return data, err
 	}
-	return []byte{}
+	return []byte{}, err
 }
