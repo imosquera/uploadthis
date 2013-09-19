@@ -5,5 +5,11 @@ import (
 )
 
 func (s *MySuite) TestS3(c *C) {
-	c.Assert("a",Equals,"a")
+	bucket := "pointabout"
+	path := "testS3"
+	data := []byte{'h', 'e', 'l', 'l', 'o'}
+	UploadBuffer(bucket, path, data)
+	returnData := DownloadBuffer(bucket, path)
+	c.Assert(string(returnData), Equals, string(data))
+	c.Assert("a", Equals, "a")
 }
