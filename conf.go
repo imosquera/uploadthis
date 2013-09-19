@@ -21,6 +21,8 @@ type UploadthisConfig struct {
 	Auth struct {
 		AccessKey, SecretKey string
 	}
+	DoingDir  string
+	DoneDir   string
 	WatchFile string
 }
 

@@ -14,11 +14,12 @@ setGOPATH() {
     mkdir -p $GOPATH
 
    
-    echo -n "Would you like to add GOPATH=$GOPATH to your ~/.bash_profile? (y/n):"
+    echo -n "Add GOPATH=$GOPATH to your ~/.bash_profile? [highly suggested] (y/n):"
     read ADD_TO_PROFILE 
     if [ "$ADD_TO_PROFILE" = "y" ]
     then
         echo "export GOPATH=$GOPATH" >> ~/.bash_profile
+        echo "export PATH=$PATH:$GOPATH/bin" >> ~/.bash_profile
     fi
 }
 
