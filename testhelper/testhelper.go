@@ -1,22 +1,8 @@
-package th
+package testhelper
 
 import (
-	"fmt"
 	"reflect"
 )
-
-var x = "original value"
-
-func main() {
-	fmt.Println(x)
-	f()
-	fmt.Println(x)
-}
-
-func f() {
-	defer Patch(&x, "new value").Restore()
-	fmt.Println(x)
-}
 
 // Restorer holds a function that can be used
 // to restore some previous state.

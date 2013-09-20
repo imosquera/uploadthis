@@ -46,6 +46,9 @@ fi
 
 go get -v github.com/imosquera/uploadthis
 go get -v github.com/axw/gocov/gocov
+go get -v code.google.com/p/gomock/gomock
+go get -v code.google.com/p/gomock/mockgen
+go get -v github.com/qur/withmock
 go get -v launchpad.net/gocheck
 
 echo 

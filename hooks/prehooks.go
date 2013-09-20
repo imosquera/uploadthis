@@ -2,6 +2,7 @@ package hooks
 
 import (
 	"compress/gzip"
+	"errors"
 	"io"
 	"log"
 	"os"
@@ -32,22 +33,19 @@ var Copy = func(dst io.Writer, src io.Reader) (int64, error) {
 
 //this function will compress the infile and
 //return a file pointer that is readible
-func (c CompressPrehook) RunPrehook(inFile io.Reader, fileInfo os.FileInfo) io.Reader {
+func (c CompressPrehook) RunPrehook(inFile io.Reader, fileInfo os.FileInfo) (gzipReader io.Reader, err error) {
 	gzipPath := "/tmp/" + fileInfo.Name() + ".gz"
 
 	outFile, err := os.Create(gzipPath)
-	fatalLog(err)
 
 	gzipWriter, err := NewCompressor(outFile)
-	fatalLog(err)
 
 	bytesWritten, err := Copy(gzipWriter, inFile)
-	fatalLog(err)
 	defer gzipWriter.Close()
 
 	if bytesWritten != fileInfo.Size() {
-		log.Fatal("Bytes written doesn't match infile byte size")
+		err = errors.New("Bytes written does not match InFile byte size")
 	}
-	newFile, _ := os.Open(gzipPath)
-	return newFile
+	gzipReader, _ = os.Open(gzipPath)
+	return gzipReader, err
 }
