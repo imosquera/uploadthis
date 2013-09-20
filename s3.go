@@ -18,7 +18,7 @@ var GetS3 = func() *s3.S3 {
 
 func UploadBuffer(s *s3.S3, bucket string, path string, data []byte) error {
 	b := s.Bucket(bucket)
-	err := b.Put(path, data, "content-type", s3.Private)
+	err := b.Put(path, data, "2content-type", s3.Private)
 	if err != nil {
 		log.Println(err)
 	}
