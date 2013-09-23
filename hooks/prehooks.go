@@ -3,49 +3,52 @@ package hooks
 import (
 	"compress/gzip"
 	"errors"
+	"github.com/imosquera/uploadthis/monitor"
 	"io"
-	"log"
 	"os"
 )
 
 type Prehooker interface {
-	RunPrehook(inFile io.Reader) io.Writer
+	RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error)
 }
 
 type Prehook struct{}
 
 type CompressPrehook struct{ Prehook }
 
-func fatalLog(err error) {
-	if err != nil {
-		log.Fatal(err)
-
+func GetPrehooks(prehooks []string) []Prehooker {
+	prehookers := make([]Prehooker, 2)
+	for _, prehook := range prehooks {
+		if prehook == "compress" {
+			prehookers = append(prehookers, CompressPrehook{})
+		}
 	}
+	return prehookers
 }
 
-var NewCompressor = func(writer io.Writer) (*gzip.Writer, error) {
-	return gzip.NewWriterLevel(writer, gzip.BestCompression)
-}
+var compressFile = func(uploadFile monitor.UploadFileInfo) (monitor.UploadFileInfo, error) {
+	inFile, _ := os.Open(uploadFile.Path)
+	gzipPath := "/tmp/" + uploadFile.Info.Name() + ".gz"
+	outFile, err := os.Create(gzipPath)
+	gzipWriter, err := gzip.NewWriterLevel(inFile, gzip.BestCompression)
+	bytesWritten, err := io.Copy(gzipWriter, inFile)
 
-var Copy = func(dst io.Writer, src io.Reader) (int64, error) {
-	return io.Copy(dst, src)
+	if bytesWritten != uploadFile.Info.Size() {
+		err = errors.New("Bytes written does not match InFile byte size")
+	}
+	gzipWriter.Close()
+	info, err := outFile.Stat()
+	return monitor.UploadFileInfo{Path: gzipPath, Info: info}, err
 }
 
 //this function will compress the infile and
 //return a file pointer that is readible
-func (c CompressPrehook) RunPrehook(inFile io.Reader, fileInfo os.FileInfo) (gzipReader io.Reader, err error) {
-	gzipPath := "/tmp/" + fileInfo.Name() + ".gz"
-
-	outFile, err := os.Create(gzipPath)
-
-	gzipWriter, err := NewCompressor(outFile)
-
-	bytesWritten, err := Copy(gzipWriter, inFile)
-	defer gzipWriter.Close()
-
-	if bytesWritten != fileInfo.Size() {
-		err = errors.New("Bytes written does not match InFile byte size")
+func (c CompressPrehook) RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error) {
+	var err error
+	newFiles := make([]monitor.UploadFileInfo, len(uploadFiles))
+	for _, uploadFile := range uploadFiles {
+		uploadFile, _ := compressFile(uploadFile)
+		newFiles = append(newFiles, uploadFile)
 	}
-	gzipReader, _ = os.Open(gzipPath)
-	return gzipReader, err
+	return newFiles, err
 }

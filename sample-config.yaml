@@ -1,6 +1,10 @@
-watchdir: /fake/watchdir
 auth:
     accesskey: hello
     secretkey: password
 
-watchfile: /mnt/logs/test.out
+monitorDir:
+    path: /mnt/logs/test.out
+    preHooks: 
+        -compress
+    postHooks:
+        -delete

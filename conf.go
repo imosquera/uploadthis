@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var Settings UploadthisConfig
+var Settings uploadthisConfig
 
 var opts struct {
 	ConfigPath string `short:"c" long:"config" description:"config path"`
@@ -17,13 +17,20 @@ var opts struct {
 	Usage      bool   `long:"usage" short:"u" description:"Print usage"`
 }
 
-type UploadthisConfig struct {
+type monitorDir struct {
+	Path      string
+	Bucket    string
+	PreHooks  []string
+	PostHooks []string
+}
+
+type uploadthisConfig struct {
 	Auth struct {
 		AccessKey, SecretKey string
 	}
-	DoingDir  string
-	DoneDir   string
-	WatchFile string
+	DoingDir    string
+	DoneDir     string
+	MonitorDirs []monitorDir
 }
 
 //this is here for mocking purposes
