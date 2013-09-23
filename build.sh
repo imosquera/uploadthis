@@ -50,6 +50,7 @@ go get -v code.google.com/p/gomock/gomock
 go get -v code.google.com/p/gomock/mockgen
 go get -v github.com/qur/withmock
 go get -v launchpad.net/gocheck
+go get -v github.com/matm/gocov-html
 
 echo 
 echo -n "The packages have been downloaded and installed here: "
