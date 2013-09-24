@@ -1,10 +1,11 @@
 auth:
     accesskey: hello
     secretkey: password
+monitordirs: 
+    - path: fixtures/monitordir/
+      bucket: 34
+      prehooks:
+        - compress
+      posthooks:
+        - delete
 
-monitorDir:
-    path: /mnt/logs/test.out
-    preHooks: 
-        -compress
-    postHooks:
-        -delete

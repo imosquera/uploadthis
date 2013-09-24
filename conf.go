@@ -28,8 +28,6 @@ type uploadthisConfig struct {
 	Auth struct {
 		AccessKey, SecretKey string
 	}
-	DoingDir    string
-	DoneDir     string
 	MonitorDirs []monitorDir
 }
 
@@ -38,7 +36,6 @@ var optsParser = flags.Parse
 
 func ParseOpts() {
 	optsParser(&opts)
-
 	if opts.ConfigPath != "" {
 		loadConfig(opts.ConfigPath)
 	}
@@ -47,7 +44,6 @@ func ParseOpts() {
 		Settings.Auth.AccessKey = opts.AccesssKey
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
-
 }
 
 func loadConfig(path string) {
@@ -59,5 +55,8 @@ func loadConfig(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	goyaml.Unmarshal(configString, &Settings)
+	err = goyaml.Unmarshal(configString, &Settings)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

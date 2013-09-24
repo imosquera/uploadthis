@@ -2,10 +2,13 @@ package hooks
 
 import (
 	"compress/gzip"
-	"errors"
 	"github.com/imosquera/uploadthis/monitor"
+	"github.com/imosquera/uploadthis/util"
 	"io"
+	"log"
 	"os"
+	"path"
+	//"runtime/debug"
 )
 
 type Prehooker interface {
@@ -19,7 +22,7 @@ type Prehook struct {
 type CompressPrehook struct{ Prehook }
 
 func GetPrehooks(prehooks []string) []Prehooker {
-	prehookers := make([]Prehooker, 2)
+	prehookers := make([]Prehooker, 0)
 	for _, prehook := range prehooks {
 		if prehook == "compress" {
 			prehookers = append(prehookers, CompressPrehook{})
@@ -29,17 +32,28 @@ func GetPrehooks(prehooks []string) []Prehooker {
 }
 
 var compressFile = func(uploadFile monitor.UploadFileInfo) (monitor.UploadFileInfo, error) {
-	inFile, _ := os.Open(uploadFile.Path)
-	gzipPath := "/tmp/" + uploadFile.Info.Name() + ".gz"
+	inFile, err := os.Open(uploadFile.Path)
+	if err != nil {
+		log.Fatal("Error for file " + uploadFile.Path + " " + err.Error())
+	}
+
+	gzipPath := path.Join(path.Dir(uploadFile.Path), "doing", uploadFile.Info.Name()+".gz")
 	outFile, err := os.Create(gzipPath)
-	gzipWriter, err := gzip.NewWriterLevel(inFile, gzip.BestCompression)
+	util.LogPanic(err)
+
+	gzipWriter, err := gzip.NewWriterLevel(outFile, gzip.BestCompression)
+	util.LogPanic(err)
+
 	bytesWritten, err := io.Copy(gzipWriter, inFile)
+	util.LogPanic(err)
 
 	if bytesWritten != uploadFile.Info.Size() {
-		err = errors.New("Bytes written does not match InFile byte size")
+		log.Fatal("Bytes written do not match inFile byte size")
 	}
 	gzipWriter.Close()
 	info, err := outFile.Stat()
+	util.LogPanic(err)
+
 	return monitor.UploadFileInfo{Path: gzipPath, Info: info}, err
 }
 
