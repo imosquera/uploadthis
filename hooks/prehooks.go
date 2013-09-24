@@ -12,7 +12,9 @@ type Prehooker interface {
 	RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error)
 }
 
-type Prehook struct{}
+type Prehook struct {
+	monitor.UploadFileInfo
+}
 
 type CompressPrehook struct{ Prehook }
 
