@@ -1,8 +1,9 @@
 package monitor
 
 import (
+	"io/ioutil"
 	"os"
-	"path/filepath"
+	"path"
 )
 
 type UploadFileInfo struct {
@@ -10,11 +11,14 @@ type UploadFileInfo struct {
 	Info os.FileInfo
 }
 
-var GetUploadFiles = func(path string) []UploadFileInfo {
+var GetUploadFiles = func(dirPath string) []UploadFileInfo {
 	allFiles := make([]UploadFileInfo, 0)
-	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		allFiles = append(allFiles, UploadFileInfo{Path: path, Info: info})
-		return nil
-	})
+	files, _ := ioutil.ReadDir(dirPath)
+	for _, dirFile := range files {
+		if !dirFile.IsDir() {
+			filePath := path.Join(dirPath, dirFile.Name())
+			allFiles = append(allFiles, UploadFileInfo{Path: filePath, Info: dirFile})
+		}
+	}
 	return allFiles
 }

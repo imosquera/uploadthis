@@ -36,7 +36,7 @@ var compressFile = func(uploadFile monitor.UploadFileInfo) (monitor.UploadFileIn
 	if err != nil {
 		log.Fatal("Error for file " + uploadFile.Path + " " + err.Error())
 	}
-
+	log.Println("Working on file", uploadFile.Path)
 	gzipPath := path.Join(path.Dir(uploadFile.Path), "doing", uploadFile.Info.Name()+".gz")
 	outFile, err := os.Create(gzipPath)
 	util.LogPanic(err)

@@ -1,4 +1,4 @@
-package uploadthis
+package conf
 
 import (
 	"github.com/jessevdk/go-flags"

@@ -8,7 +8,7 @@ Quick Start
 ============
   To get started quickly: 
 
-    curl -fsSL https://raw.github.com/imosquera/uploadthis/master/build.sh -o /tmp/build.source && source /tmp/build.source
+    curl -fsSL https://raw.github.com/imosquera/uploadthis/master/activate -o /tmp/build.source && source /tmp/build.source
 
 Goal
 ====
