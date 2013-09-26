@@ -46,17 +46,17 @@ func ParseOpts() {
 	}
 }
 
-func loadConfig(path string) {
+var loadConfig = func(path string) {
 	file, err := os.Open(path) // For read access.
+	e, _ := os.Getwd()
+	println(e)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Panic("can't open config file", err)
 	}
 	configString, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatal(err)
-	}
 	err = goyaml.Unmarshal(configString, &Settings)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic("can't unmarshal the yaml file", err)
 	}
 }

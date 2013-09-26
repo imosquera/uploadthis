@@ -1,6 +1,6 @@
 auth:
-    accesskey: hello
-    secretkey: password
+    accesskey: myaccesskey
+    secretkey: mysupersecretkey
 monitordirs: 
     - path: fixtures/monitordir/
       bucket: 34

@@ -19,14 +19,16 @@ type Prehook struct {
 	monitor.UploadFileInfo
 }
 
-type CompressPrehook struct{ Prehook }
+type registeredPrehooks map[string]Prehooker
+
+func RegisterPrehook(name string, prehooker Prehooker) {
+	registeredPrehooks[name] = prehooker
+}
 
 func GetPrehooks(prehooks []string) []Prehooker {
-	prehookers := make([]Prehooker, 0)
+	prehookers := make([]Prehooker, 0, 2)
 	for _, prehook := range prehooks {
-		if prehook == "compress" {
-			prehookers = append(prehookers, CompressPrehook{})
-		}
+		prehookers = append(prehookers, registeredPrehooks[prehook])
 	}
 	return prehookers
 }
@@ -56,6 +58,8 @@ var compressFile = func(uploadFile monitor.UploadFileInfo) (monitor.UploadFileIn
 
 	return monitor.UploadFileInfo{Path: gzipPath, Info: info}, err
 }
+
+type CompressPrehook struct{ Prehook }
 
 //this function will compress the infile and
 //return a file pointer that is readible

@@ -18,3 +18,7 @@ func MakeWorkDirs(dirPath string) {
 	MakeDirWithWarning(doing)
 	MakeDirWithWarning(done)
 }
+
+func init() {
+
+}

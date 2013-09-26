@@ -1,8 +1,17 @@
-package testhelper
+package util
 
 import (
+	"os"
+	"path"
 	"reflect"
 )
+
+var RootProjectPath string = setupRootProjectPath()
+
+func setupRootProjectPath() string {
+	goPath := os.Getenv("GOPATH")
+	return path.Join(goPath, "src/github.com/imosquera/uploadthis")
+}
 
 // Restorer holds a function that can be used
 // to restore some previous state.
