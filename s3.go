@@ -1,6 +1,7 @@
 package uploadthis
 
 import (
+	"io"
 	"launchpad.net/goamz/aws"
 	"launchpad.net/goamz/s3"
 	"log"
@@ -48,12 +49,12 @@ func DownloadBytes(s *s3.S3, bucket string, path string) ([]byte, error) {
 
 func DownloadReader(s *s3.S3, bucket string, path string) (io.ReadCloser, error) {
 	b := s.Bucket(bucket)
-	data, err := b.Get(path)
+	data, err := b.GetReader(path)
 	if err != nil {
 		log.Println(err)
-		return io.ReadCloser{}, err
+		return nil, err
 	} else {
 		return data, err
 	}
-	return io.ReadCloser{}, err
+	return nil, err
 }
