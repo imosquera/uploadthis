@@ -16,7 +16,7 @@ var GetS3 = func() *s3.S3 {
 	return s3Conn
 }
 
-func UploadBuffer(s *s3.S3, bucket string, path string, data []byte) error {
+func UploadBytes(s *s3.S3, bucket string, path string, data []byte) error {
 	b := s.Bucket(bucket)
 	err := b.Put(path, data, "content-type", s3.Private)
 	if err != nil {
@@ -25,7 +25,16 @@ func UploadBuffer(s *s3.S3, bucket string, path string, data []byte) error {
 	return err
 }
 
-func DownloadBuffer(s *s3.S3, bucket string, path string) ([]byte, error) {
+func UploadReader(s *s3.S3, bucket string, path string, data io.Reader, length int64) error {
+	b := s.Bucket(bucket)
+	err := b.PutReader(path, data, length, "content-type", s3.Private)
+	if err != nil {
+		log.Println(err)
+	}
+	return err
+}
+
+func DownloadBytes(s *s3.S3, bucket string, path string) ([]byte, error) {
 	b := s.Bucket(bucket)
 	data, err := b.Get(path)
 	if err != nil {
@@ -35,4 +44,16 @@ func DownloadBuffer(s *s3.S3, bucket string, path string) ([]byte, error) {
 		return data, err
 	}
 	return []byte{}, err
+}
+
+func DownloadReader(s *s3.S3, bucket string, path string) (io.ReadCloser, error) {
+	b := s.Bucket(bucket)
+	data, err := b.Get(path)
+	if err != nil {
+		log.Println(err)
+		return io.ReadCloser{}, err
+	} else {
+		return data, err
+	}
+	return io.ReadCloser{}, err
 }
