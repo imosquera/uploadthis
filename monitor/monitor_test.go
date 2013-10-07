@@ -13,5 +13,5 @@ type MySuite2 struct{}
 var _ = Suite(&MySuite2{})
 
 //this test makes sure that the access key and secret keys are set
-func (s *MySuite2) TestAuthSet2(c *C) {
+func (s *MySuite2) TestUploadFilesInfo(c *C) {
 }
