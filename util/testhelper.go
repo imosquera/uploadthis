@@ -9,8 +9,9 @@ import (
 var RootProjectPath string = setupRootProjectPath()
 
 func setupRootProjectPath() string {
-	goPath := os.Getenv("GOPATH")
-	return path.Join(goPath, "src/github.com/imosquera/uploadthis")
+	realGopath := os.Getenv("ORIG_GOPATH")
+	realGopath = path.Join(realGopath, "src/github.com/imosquera/uploadthis")
+	return realGopath
 }
 
 // Restorer holds a function that can be used

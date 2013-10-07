@@ -13,7 +13,7 @@ func main() {
 	//this parsing options and does some additional configurations
 	conf.ParseOpts()
 	for _, monitorDir := range conf.Settings.MonitorDirs {
-		hooks.MakeWorkDirs(monitorDir.Path)
+		conf.MakeWorkDirs(monitorDir.Path)
 		uploadFiles := monitor.GetUploadFiles(monitorDir.Path)
 		prehooks := hooks.GetPrehooks(monitorDir.PreHooks)
 		for _, prehook := range prehooks {

@@ -23,6 +23,25 @@ setGOPATH() {
     fi
 }
 
+generateMocks() {
+    echo Generating mocks
+    mockgen -package=mocks os FileInfo > util/mocks/os_mocks.go
+    mockgen -package=mocks -source=./hooks/prehooks.go > util/mocks/prehook_mocks.go
+    echo Mocks generated
+}
+
+usage() {
+    cat << EOF
+    usage: $0 options command
+
+    This script manages this project
+
+    OPTIONS:
+       -h                     Show this message
+       -n                     Non-interactive mode
+EOF
+}
+
 interactive() {
     if [ -z $GOPATH ] 
     then
@@ -39,20 +58,51 @@ interactive() {
     fi
 }
 
-if [ "$1" != "--non-interactive" ]
-then
-    interactive
-fi
+build () {
+    if [ "$NON_INTERACTIVE" == "true" ] 
+    then
+        interactive
+    fi
+    go get -v github.com/imosquera/uploadthis
+    go get -v github.com/axw/gocov/gocov
+    go get -v code.google.com/p/gomock/gomock
+    go get -v code.google.com/p/gomock/mockgen
+    go get -v github.com/qur/withmock
+    go get -v github.com/qur/withmock/mocktest
+    go get -v launchpad.net/gocheck
+    go get -v github.com/matm/gocov-html
 
-go get -v github.com/imosquera/uploadthis
-go get -v github.com/axw/gocov/gocov
-go get -v code.google.com/p/gomock/gomock
-go get -v code.google.com/p/gomock/mockgen
-go get -v github.com/qur/withmock
-go get -v launchpad.net/gocheck
-go get -v github.com/matm/gocov-html
+    echo 
+    echo -n "The packages have been downloaded and installed here: "
+    echo -e "\033[32m $GOPATH/src/github.com/imosquera/uploadthis\033[0m"
+    echo -e "Have fun gophing around! -- From your friends at \033[32mShareThis\033[0m"
+}
 
-echo 
-echo -n "The packages have been downloaded and installed here: "
-echo -e "\033[32m $GOPATH/src/github.com/imosquera/uploadthis\033[0m"
-echo -e "Have fun gophing around! -- From your friends at \033[32mShareThis\033[0m"
+NON_INTERACTIVE="true"
+while getopts “h:n” OPTION
+do
+     case $OPTION in
+         h)
+             usage
+             exit 1
+             ;;
+         n)
+             NON_INTERACTIVE="false"
+             ;;
+         ?)
+             usage
+             exit
+             ;;
+     esac
+done
+shift $((OPTIND-1))
+PROGRAM=$1
+
+case "$1" in
+        genmocks)
+            generateMocks
+            ;;
+        *)
+            build
+            ;;
+esac

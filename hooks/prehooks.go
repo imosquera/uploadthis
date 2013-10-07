@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"path"
-	//"runtime/debug"
 )
 
 type Prehooker interface {
@@ -19,13 +18,16 @@ type Prehook struct {
 	monitor.UploadFileInfo
 }
 
-type registeredPrehooks map[string]Prehooker
+var registeredPrehooks map[string]Prehooker
 
 func RegisterPrehook(name string, prehooker Prehooker) {
+	if registeredPrehooks == nil {
+		registeredPrehooks = map[string]Prehooker{}
+	}
 	registeredPrehooks[name] = prehooker
 }
 
-func GetPrehooks(prehooks []string) []Prehooker {
+var GetPrehooks = func(prehooks []string) []Prehooker {
 	prehookers := make([]Prehooker, 0, 2)
 	for _, prehook := range prehooks {
 		prehookers = append(prehookers, registeredPrehooks[prehook])
@@ -63,6 +65,9 @@ type CompressPrehook struct{ Prehook }
 
 //this function will compress the infile and
 //return a file pointer that is readible
+func (c CompressPrehook) FakeFunc() {
+
+}
 func (c CompressPrehook) RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error) {
 	var err error
 	newFiles := make([]monitor.UploadFileInfo, len(uploadFiles))

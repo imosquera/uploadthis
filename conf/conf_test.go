@@ -1,8 +1,10 @@
 package conf
 
 import (
+	//"fmt"
 	"github.com/imosquera/uploadthis/util"
 	. "launchpad.net/gocheck"
+	//"os"
 	"path"
 	"testing"
 )
@@ -24,16 +26,17 @@ func (s *MySuite) TestAuthSet(c *C) {
 	}
 
 	var isLoadConfigCalled bool
+
 	defer util.Patch(&loadConfig, func(path string) {
 		isLoadConfigCalled = true
-		c.Check(path, Equals, "MOCK PATH")
+		c.Assert(path, Equals, "MOCK PATH")
 	}).Restore()
 
 	ParseOpts()
 
-	c.Check(Settings.Auth.AccessKey, Equals, "MOCK KEY")
-	c.Check(Settings.Auth.AccessKey, Equals, "MOCK KEY")
-	c.Check(isLoadConfigCalled, Equals, true)
+	c.Assert(Settings.Auth.AccessKey, Equals, "MOCK KEY")
+	c.Assert(Settings.Auth.AccessKey, Equals, "MOCK KEY")
+	c.Assert(isLoadConfigCalled, Equals, true)
 }
 
 //this test makes sure that are NOT set if one key is missing
@@ -45,13 +48,14 @@ func (s *MySuite) TestAuthNotSet(c *C) {
 		return []string{}, nil
 	}
 	ParseOpts()
-	c.Check(Settings.Auth.AccessKey, Equals, "")
-	c.Check(Settings.Auth.SecretKey, Equals, "")
+	c.Assert(Settings.Auth.AccessKey, Equals, "")
+	c.Assert(Settings.Auth.SecretKey, Equals, "")
 }
 
 func (s *MySuite) TestLoadConfig(c *C) {
 	sampleConfigPath := path.Join(util.RootProjectPath, "fixtures/sample-config.yaml")
+	println(sampleConfigPath)
 	loadConfig(sampleConfigPath)
-	c.Check(Settings.Auth.AccessKey, Equals, "myaccesskey")
-	c.Check(Settings.Auth.SecretKey, Equals, "mysupersecretkey")
+	c.Assert(Settings.Auth.AccessKey, Equals, "myaccesskey")
+	c.Assert(Settings.Auth.SecretKey, Equals, "mysupersecretkey")
 }
