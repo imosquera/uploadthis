@@ -1,10 +1,9 @@
 package conf
 
 import (
-	//"fmt"
 	"github.com/imosquera/uploadthis/util"
 	. "launchpad.net/gocheck"
-	//"os"
+	"os"
 	"path"
 	"testing"
 )
@@ -58,4 +57,21 @@ func (s *MySuite) TestLoadConfig(c *C) {
 	loadConfig(sampleConfigPath)
 	c.Assert(Settings.Auth.AccessKey, Equals, "myaccesskey")
 	c.Assert(Settings.Auth.SecretKey, Equals, "mysupersecretkey")
+}
+func (s *MySuite) TestMakeWorkDirs(c *C) {
+	scratchDir := util.RootProjectPath + "/fixtures/conf_test_scratch_dir/"
+	_, err := os.Stat(scratchDir)
+	if err == nil {
+		os.RemoveAll(scratchDir)
+	}
+	os.Mkdir(scratchDir, 0755)
+	MakeWorkDirs(scratchDir)
+	//clean up if needed from previous test
+
+	doingDirInfo, err := os.Stat(scratchDir)
+	doneDirInfo, err := os.Stat(scratchDir)
+	c.Assert(doingDirInfo.IsDir(), Equals, true)
+	c.Assert(doneDirInfo.IsDir(), Equals, true)
+	os.RemoveAll(scratchDir)
+
 }
