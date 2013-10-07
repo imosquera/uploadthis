@@ -1,0 +1,11 @@
+auth:
+    accesskey: myaccesskey
+    secretkey: mysupersecretkey
+monitordirs: 
+    - path: fixtures/monitordir/
+      bucket: 34
+      prehooks:
+        - compress
+      posthooks:
+        - delete
+
