@@ -1,4 +1,4 @@
-package uploadthis
+package conf
 
 import (
 	"github.com/jessevdk/go-flags"
@@ -6,9 +6,10 @@ import (
 	"launchpad.net/goyaml"
 	"log"
 	"os"
+	"path"
 )
 
-var Settings UploadthisConfig
+var Settings uploadthisConfig
 
 var opts struct {
 	ConfigPath string `short:"c" long:"config" description:"config path"`
@@ -17,17 +18,24 @@ var opts struct {
 	Usage      bool   `long:"usage" short:"u" description:"Print usage"`
 }
 
-type UploadthisConfig struct {
+type MonitorDir struct {
+	Path      string
+	Bucket    string
+	PreHooks  []string
+	PostHooks []string
+}
+
+type uploadthisConfig struct {
 	Auth struct {
 		AccessKey, SecretKey string
 	}
-	WatchFile string
+	MonitorDirs []MonitorDir
 }
 
-//this is here for mocking purposes
 var optsParser = flags.Parse
 
-func ParseOpts() {
+var ParseOpts = func() {
+
 	optsParser(&opts)
 
 	if opts.ConfigPath != "" {
@@ -38,17 +46,33 @@ func ParseOpts() {
 		Settings.Auth.AccessKey = opts.AccesssKey
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
-
 }
 
-func loadConfig(path string) {
+var loadConfig = func(path string) {
 	file, err := os.Open(path) // For read access.
+	e, _ := os.Getwd()
+	println(e)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Panic("can't open config file", err)
 	}
 	configString, err := ioutil.ReadAll(file)
+	err = goyaml.Unmarshal(configString, &Settings)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic("can't unmarshal the yaml file", err)
 	}
-	goyaml.Unmarshal(configString, &Settings)
+}
+
+var MakeDirWithWarning = func(dirPath string) {
+	err := os.Mkdir(dirPath, 0755)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+var MakeWorkDirs = func(dirPath string) {
+	doing := path.Join(dirPath, "doing")
+	done := path.Join(dirPath, "done")
+	MakeDirWithWarning(doing)
+	MakeDirWithWarning(done)
 }

@@ -1,6 +1,0 @@
-watchdir: /fake/watchdir
-auth:
-    accesskey: hello
-    secretkey: password
-
-watchfile: /mnt/logs/test.out
