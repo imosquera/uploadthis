@@ -62,6 +62,7 @@ func (s *MySuite) TestMakeWorkDirs(c *C) {
 	scratchDir := util.RootProjectPath + "/fixtures/conf_test_scratch_dir/"
 	_, err := os.Stat(scratchDir)
 	if err == nil {
+		//clean up from previous test
 		os.RemoveAll(scratchDir)
 	}
 	os.Mkdir(scratchDir, 0755)
