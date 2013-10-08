@@ -2,7 +2,7 @@ package hooks
 
 import (
 	"compress/gzip"
-	"github.com/imosquera/uploadthis/monitor"
+	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/util"
 	"io"
 	"log"
@@ -10,67 +10,67 @@ import (
 	"path"
 )
 
-type Prehooker interface {
-	RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error)
-}
+var registeredPrehooks map[string]commands.Commander
 
-type Prehook struct {
-	monitor.UploadFileInfo
-}
+func RegisterPrehook(name string, prehook commands.Commander) {
 
-var registeredPrehooks map[string]Prehooker
-
-func RegisterPrehook(name string, prehooker Prehooker) {
 	if registeredPrehooks == nil {
-		registeredPrehooks = map[string]Prehooker{}
+		registeredPrehooks = make(map[string]commands.Commander, 5)
 	}
-	registeredPrehooks[name] = prehooker
+	registeredPrehooks[name] = prehook
 }
 
-var GetPrehooks = func(prehooks []string) []Prehooker {
-	prehookers := make([]Prehooker, 0, 2)
+// func RunPrehooks(uploadFiles []string, monitorDir conf.MonitorDir) []string {
+// 	prehooks := getPrehooks(monitorDir.PreHooks)
+// 	for name, prehook := range prehooks {
+// 		workDir := path.Join(monitorDir.Path, name)
+// 		uploadFiles = MoveToWorkDir(workDir, uploadFiles)
+// 		//update uploadfiles with resume files
+// 		uploadFiles = updateResumeFiles(workDir, uploadFiles)
+// 		uploadFiles, _ = prehook.RunPrehook(uploadFiles)
+// 	}
+// 	return uploadFiles
+// }
+
+type Prehook struct{}
+
+func GetPrehookCommands(prehooks []string, prehookCommands map[string]commands.Commander) {
 	for _, prehook := range prehooks {
-		prehookers = append(prehookers, registeredPrehooks[prehook])
+		prehookCommands[prehook] = registeredPrehooks[prehook]
 	}
-	return prehookers
 }
 
-var compressFile = func(uploadFile monitor.UploadFileInfo) (monitor.UploadFileInfo, error) {
-	inFile, err := os.Open(uploadFile.Path)
+var compressFile = func(filepath string) (string, error) {
+	inFile, err := os.Open(filepath)
 	if err != nil {
-		log.Fatal("Error for file " + uploadFile.Path + " " + err.Error())
+		log.Fatal("Error for file " + filepath + " " + err.Error())
 	}
-	log.Println("Working on file", uploadFile.Path)
-	gzipPath := path.Join(path.Dir(uploadFile.Path), "doing", uploadFile.Info.Name()+".gz")
+	log.Println("Working on file", filepath)
+
+	gzipPath := path.Join(path.Dir(filepath), path.Base(filepath)+".gz")
 	outFile, err := os.Create(gzipPath)
 	util.LogPanic(err)
 
 	gzipWriter, err := gzip.NewWriterLevel(outFile, gzip.BestCompression)
 	util.LogPanic(err)
 
-	bytesWritten, err := io.Copy(gzipWriter, inFile)
+	_, err = io.Copy(gzipWriter, inFile)
 	util.LogPanic(err)
 
-	if bytesWritten != uploadFile.Info.Size() {
-		log.Fatal("Bytes written do not match inFile byte size")
-	}
 	gzipWriter.Close()
-	info, err := outFile.Stat()
-	util.LogPanic(err)
 
-	return monitor.UploadFileInfo{Path: gzipPath, Info: info}, err
+	return gzipPath, err
 }
 
-type CompressPrehook struct{ Prehook }
+type CompressPrehook struct {
+	*Prehook
+}
 
 //this function will compress the infile and
 //return a file pointer that is readible
-func (c CompressPrehook) FakeFunc() {
-
-}
-func (c CompressPrehook) RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error) {
+func (c CompressPrehook) RunPrehook(uploadFiles []string) ([]string, error) {
 	var err error
-	newFiles := make([]monitor.UploadFileInfo, len(uploadFiles))
+	newFiles := make([]string, len(uploadFiles))
 	for _, uploadFile := range uploadFiles {
 		uploadFile, _ := compressFile(uploadFile)
 		newFiles = append(newFiles, uploadFile)

@@ -2,11 +2,9 @@ package main
 
 import (
 	"code.google.com/p/gomock/gomock"
-	"github.com/imosquera/uploadthis/conf"
-	"github.com/imosquera/uploadthis/hooks"
-	"github.com/imosquera/uploadthis/monitor"
+	"github.com/imosquera/uploadthis/commands"
+	"github.com/imosquera/uploadthis/conf" //mock
 	"github.com/imosquera/uploadthis/util"
-	"github.com/imosquera/uploadthis/util/mocks"
 	. "launchpad.net/gocheck"
 	"testing"
 )
@@ -31,47 +29,35 @@ func (s *MainSuite) TestMain(c *C) {
 	mockCtrl := gomock.NewController(c)
 	defer mockCtrl.Finish()
 
-	mockMonitorDir := conf.MonitorDir{}
-	mockMonitorDir.Path = "mockpath"
-	mockUploadFileInfos := []monitor.UploadFileInfo{}
+	conf.MOCK().SetController(mockCtrl)
+	conf.EXPECT().ParseOpts().Return()
 
-	//MOCK PARSE OPTS
-	calledParseOpt := false
-	defer util.Patch(&conf.ParseOpts, func() {
-		calledParseOpt = true
-		//in this parse opts we'll also need to configure the monitordirs because
-		//the monitorDirs struct is private
-		conf.Settings.MonitorDirs = []conf.MonitorDir{mockMonitorDir}
+	calledCommandsForMon := false
+	defer util.Patch(&executeCommandsForMonitors, func() {
+		calledCommandsForMon = true
 	}).Restore()
 
-	//MOCK MAKE WORK DIRS
-	calledMakeWorkDirs := false
-	defer util.Patch(&conf.MakeWorkDirs, func(dir string) {
-		calledMakeWorkDirs = true
-		c.Assert(dir, Equals, mockMonitorDir.Path)
-	}).Restore()
-
-	//MOCK GET UPLOADFILES
-	calledGetUploadFiles := false
-	defer util.Patch(&monitor.GetUploadFiles, func(dirPath string) []monitor.UploadFileInfo {
-		calledGetUploadFiles = true
-		c.Assert(dirPath, Equals, mockMonitorDir.Path)
-		return mockUploadFileInfos
-	}).Restore()
-
-	//MOCK GET PREHOOKS
-	calledPrehooks := false
-	mockPrehook := mocks.NewMockPrehooker(mockCtrl)
-	mockPrehook.EXPECT().RunPrehook(mockUploadFileInfos).Return(mockUploadFileInfos, nil)
-	defer util.Patch(&hooks.GetPrehooks, func(prehooks []string) []hooks.Prehooker {
-		calledPrehooks = true
-		return []hooks.Prehooker{mockPrehook}
-	}).Restore()
-
-	//call main function and run test
 	main()
-	c.Assert(calledParseOpt, Equals, true)
-	c.Assert(calledMakeWorkDirs, Equals, true)
-	c.Assert(calledGetUploadFiles, Equals, true)
-	c.Assert(calledPrehooks, Equals, true)
+
+	c.Assert(calledCommandsForMon, Equals, true)
+}
+
+func (s *MainSuite) TestExecuteCommandsForMonitors(c *C) {
+	//this test is getting pretty big already, we should consider breaking up the main function into smaller
+	//testable functions
+	mockCtrl := gomock.NewController(c)
+	defer mockCtrl.Finish()
+
+	conf.Settings.MonitorDirs = []conf.MonitorDir{
+		conf.MonitorDir{Path: "mockpath"},
+	}
+
+	calledCommandList := false
+	defer util.Patch(&createCommandList, func(monitorDir *conf.MonitorDir) map[string]commands.Commander {
+		calledCommandList = true
+		return nil
+	}).Restore()
+
+	executeCommandsForMonitors()
+	c.Assert(calledCommandList, Equals, true)
 }

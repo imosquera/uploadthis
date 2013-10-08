@@ -30,6 +30,29 @@ func (s *HookSuite) TearDownTest(c *C) {
 	s.mockCtrl = nil
 }
 
+func (s *HookSuite) TestDoingPrehook(c *C) {
+	scratchDir := path.Join(util.RootProjectPath, "tmp/fixtures/prehook_test")
+	doingDir := path.Join(scratchDir, "doing")
+	//cleanup previous test
+	os.RemoveAll(scratchDir)
+	os.MkdirAll(doingDir, 0755)
+
+	mockFilePath := path.Join(scratchDir, "testfile.txt")
+	os.Create(mockFilePath)
+	mockFileStat, _ := os.Stat(mockFilePath)
+
+	mockUploadFiles := []monitor.UploadFileInfo{
+		monitor.UploadFileInfo{Path: mockFilePath, Info: mockFileStat},
+	}
+
+	prehooker := DoingPrehook{}
+	prehooker.RunPrehook(mockUploadFiles)
+
+	filePath, _ := os.Stat(path.Join(doingDir, "testfile.txt"))
+
+	//monitor := monitor.UploadFileInfo{}
+	//monitor.Path()
+}
 func (s *HookSuite) TestCompressFile(c *C) {
 	sampleTxtPath := path.Join(util.RootProjectPath, "fixtures/monitordir/sample.txt")
 	sampleFile, _ := os.Open(sampleTxtPath)

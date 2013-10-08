@@ -6,7 +6,6 @@ import (
 	"launchpad.net/goyaml"
 	"log"
 	"os"
-	"path"
 )
 
 var Settings uploadthisConfig
@@ -34,7 +33,7 @@ type uploadthisConfig struct {
 
 var optsParser = flags.Parse
 
-var ParseOpts = func() {
+func ParseOpts() {
 
 	optsParser(&opts)
 
@@ -61,18 +60,4 @@ var loadConfig = func(path string) {
 	if err != nil {
 		log.Panic("can't unmarshal the yaml file", err)
 	}
-}
-
-var MakeDirWithWarning = func(dirPath string) {
-	err := os.Mkdir(dirPath, 0755)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-var MakeWorkDirs = func(dirPath string) {
-	doing := path.Join(dirPath, "doing")
-	done := path.Join(dirPath, "done")
-	MakeDirWithWarning(doing)
-	MakeDirWithWarning(done)
 }

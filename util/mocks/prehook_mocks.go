@@ -4,7 +4,6 @@
 package mocks
 
 import (
-	monitor "github.com/imosquera/uploadthis/monitor"
 	gomock "code.google.com/p/gomock/gomock"
 )
 
@@ -29,9 +28,9 @@ func (_m *MockPrehooker) EXPECT() *_MockPrehookerRecorder {
 	return _m.recorder
 }
 
-func (_m *MockPrehooker) RunPrehook(uploadFiles []monitor.UploadFileInfo) ([]monitor.UploadFileInfo, error) {
+func (_m *MockPrehooker) RunPrehook(uploadFiles []string) ([]string, error) {
 	ret := _m.ctrl.Call(_m, "RunPrehook", uploadFiles)
-	ret0, _ := ret[0].([]monitor.UploadFileInfo)
+	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
