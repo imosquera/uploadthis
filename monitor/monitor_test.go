@@ -31,7 +31,7 @@ func (s *MonitorTest) TestGetUploadFiles(c *C) {
 	fileInfos := GetUploadFiles("mockpath")
 	thePath := ""
 	for _, fileInfo := range fileInfos {
-		thePath = fileInfo.Path
+		thePath = fileInfo
 	}
 	c.Assert(len(fileInfos), Equals, 1)
 	c.Assert(thePath, Equals, "mockpath/mockfile")

@@ -1,9 +1,11 @@
 package conf
 
 import (
+	"code.google.com/p/gomock/gomock"
 	"github.com/imosquera/uploadthis/util"
+	"github.com/imosquera/uploadthis/util/mocks"
+	"github.com/jessevdk/go-flags" //mock
 	. "launchpad.net/gocheck"
-	"os"
 	"path"
 	"testing"
 )
@@ -17,62 +19,36 @@ var _ = Suite(&MySuite{})
 
 //this test makes sure that the access key and secret keys are set
 func (s *MySuite) TestAuthSet(c *C) {
-	optsParser = func(interface{}) ([]string, error) {
-		opts.AccesssKey = "MOCK KEY"
-		opts.SecretKey = "MOCK SECRET"
-		opts.ConfigPath = "MOCK PATH"
-		return []string{}, nil
-	}
+	mockCtrl := gomock.NewController(c)
+	defer mockCtrl.Finish()
 
-	var isLoadConfigCalled bool
+	flags.MOCK().SetController(mockCtrl)
+	flags.EXPECT().Parse(&opts)
 
-	defer util.Patch(&loadConfig, func(path string) {
-		isLoadConfigCalled = true
-		c.Assert(path, Equals, "MOCK PATH")
-	}).Restore()
+	opts.ConfigPath = "mockpath"
+	opts.AccesssKey = "MOCK KEY"
+	opts.SecretKey = "MOCK SECRET"
+	mockConfLoader := mocks.NewMockConfigLoader(mockCtrl)
+
+	mockConfLoader.EXPECT().LoadConfig("mockpath", &Settings).Return()
+	configLoader = mockConfLoader
 
 	ParseOpts()
 
 	c.Assert(Settings.Auth.AccessKey, Equals, "MOCK KEY")
-	c.Assert(Settings.Auth.AccessKey, Equals, "MOCK KEY")
-	c.Assert(isLoadConfigCalled, Equals, true)
+	c.Assert(Settings.Auth.SecretKey, Equals, "MOCK SECRET")
+
+	//make sure we clean up when we're done
+	opts.ConfigPath = ""
+	opts.AccesssKey = ""
+	opts.SecretKey = ""
 }
 
-//this test makes sure that are NOT set if one key is missing
-//and if it's not it wont set the keys on the global settings packages
-func (s *MySuite) TestAuthNotSet(c *C) {
-	optsParser = func(interface{}) ([]string, error) {
-		opts.AccesssKey = "MOCK KEY"
-		opts.SecretKey = ""
-		return []string{}, nil
-	}
-	ParseOpts()
-	c.Assert(Settings.Auth.AccessKey, Equals, "")
-	c.Assert(Settings.Auth.SecretKey, Equals, "")
-}
-
-func (s *MySuite) TestLoadConfig(c *C) {
-	sampleConfigPath := path.Join(util.RootProjectPath, "fixtures/sample-config.yaml")
-	println(sampleConfigPath)
-	loadConfig(sampleConfigPath)
-	c.Assert(Settings.Auth.AccessKey, Equals, "myaccesskey")
-	c.Assert(Settings.Auth.SecretKey, Equals, "mysupersecretkey")
-}
-func (s *MySuite) TestMakeWorkDirs(c *C) {
-	scratchDir := util.RootProjectPath + "/fixtures/conf_test_scratch_dir/"
-	_, err := os.Stat(scratchDir)
-	if err == nil {
-		//clean up from previous test
-		os.RemoveAll(scratchDir)
-	}
-	os.Mkdir(scratchDir, 0755)
-	MakeWorkDirs(scratchDir)
-	//clean up if needed from previous test
-
-	doingDirInfo, err := os.Stat(scratchDir)
-	doneDirInfo, err := os.Stat(scratchDir)
-	c.Assert(doingDirInfo.IsDir(), Equals, true)
-	c.Assert(doneDirInfo.IsDir(), Equals, true)
-	os.RemoveAll(scratchDir)
-
+func (s *MySuite) TestYamlLoadConfig(c *C) {
+	yamlPath := path.Join(util.RootProjectPath, "fixtures/sample-config.yaml")
+	yamlLoader := &YamlConfigLoader{}
+	mockSettings := &UploadthisConfig{}
+	yamlLoader.LoadConfig(yamlPath, mockSettings)
+	c.Assert(mockSettings.Auth.AccessKey, Equals, "myaccesskey")
+	c.Assert(mockSettings.Auth.SecretKey, Equals, "mysupersecretkey")
 }

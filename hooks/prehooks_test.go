@@ -2,11 +2,12 @@ package hooks
 
 import (
 	"code.google.com/p/gomock/gomock"
+	mockgz "compress/gzip" //mock
 	"compress/gzip"
-	"github.com/imosquera/uploadthis/monitor"
-	"github.com/imosquera/uploadthis/util"
+	"github.com/imosquera/uploadthis/commands"
+	"github.com/imosquera/uploadthis/util" //mock
 	"github.com/imosquera/uploadthis/util/mocks"
-	"io/ioutil"
+	"io" //mock
 	. "launchpad.net/gocheck"
 	"os"
 	"path"
@@ -16,85 +17,88 @@ import (
 // Hook up gocheck into the "go test" runner.
 func Test(t *testing.T) { TestingT(t) }
 
-type HookSuite struct {
-	mockCtrl *gomock.Controller
-}
+type HookSuite struct{}
 
 var _ = Suite(&HookSuite{})
 
 func (s *HookSuite) SetupTest(c *C) {
-	s.mockCtrl = gomock.NewController(c)
 }
 
 func (s *HookSuite) TearDownTest(c *C) {
-	s.mockCtrl = nil
 }
 
-func (s *HookSuite) TestDoingPrehook(c *C) {
-	scratchDir := path.Join(util.RootProjectPath, "tmp/fixtures/prehook_test")
-	doingDir := path.Join(scratchDir, "doing")
-	//cleanup previous test
-	os.RemoveAll(scratchDir)
-	os.MkdirAll(doingDir, 0755)
+func (s *HookSuite) TestGzipCompressFile(c *C) {
+	//I THINK SHOULD BE CHANGED TO TEST LEST OF IMPLEMNTATION AND MORE OF AN INTEGRATION TEST
+	//setup a mock controller
+	mockCtrl := gomock.NewController(c)
+	defer mockCtrl.Finish()
 
-	mockFilePath := path.Join(scratchDir, "testfile.txt")
-	os.Create(mockFilePath)
-	mockFileStat, _ := os.Stat(mockFilePath)
+	util.MOCK().SetController(mockCtrl)
+	util.EXPECT().LogPanic(nil)
+	util.EXPECT().LogPanic(nil)
+	util.EXPECT().LogPanic(nil)
 
-	mockUploadFiles := []monitor.UploadFileInfo{
-		monitor.UploadFileInfo{Path: mockFilePath, Info: mockFileStat},
-	}
+	mockgz.MOCK().SetController(mockCtrl)
+	io.MOCK().SetController(mockCtrl)
+	//we must open a real file in order to send it back.
+	mockFile, _ := os.Open(path.Join(util.RootProjectPath, "fixtures", "gziptest.txt"))
 
-	prehooker := DoingPrehook{}
-	prehooker.RunPrehook(mockUploadFiles)
+	mockOS := util.OsFs{}
 
-	filePath, _ := os.Stat(path.Join(doingDir, "testfile.txt"))
+	mockOS.EXPECT().Open("mockpath").Return(mockFile, nil)
+	mockOS.EXPECT().Create("mockpath.gz").Return(mockFile, nil)
 
-	//monitor := monitor.UploadFileInfo{}
-	//monitor.Path()
-}
-func (s *HookSuite) TestCompressFile(c *C) {
-	sampleTxtPath := path.Join(util.RootProjectPath, "fixtures/monitordir/sample.txt")
-	sampleFile, _ := os.Open(sampleTxtPath)
-	originalBytes, _ := ioutil.ReadAll(sampleFile)
-	info, _ := sampleFile.Stat()
-	uploadFileInfo := monitor.UploadFileInfo{Path: sampleTxtPath, Info: info}
-	gzipUploadFileInfo, _ := compressFile(uploadFileInfo)
+	mockGzipWriter := &mockgz.Writer{}
+	mockgz.EXPECT().NewWriterLevel(mockFile, gzip.BestCompression).Return(mockGzipWriter, nil)
+	mockGzipWriter.EXPECT().Close()
 
-	//lets read the gzipped file
-	gzipFile, _ := os.Open(gzipUploadFileInfo.Path)
-	gzipReader, _ := gzip.NewReader(gzipFile)
-	unzippedBytes, _ := ioutil.ReadAll(gzipReader)
+	var mockInt int64 = 0
+	io.EXPECT().Copy(mockGzipWriter, mockFile).Return(mockInt, nil)
 
-	c.Assert(string(originalBytes), Equals, string(unzippedBytes))
+	util.Fs = mockOS
+
+	gzipCompressor := GzipFileCompressor{}
+
+	gzipCompressor.Compress("mockpath")
+
 }
 
-func (s *HookSuite) TestRunPrehook(c *C) {
-	mockFileInfo := mocks.NewMockFileInfo(s.mockCtrl)
+func (s *HookSuite) TestRunCompressPrehook(c *C) {
+	mockCtrl := gomock.NewController(c)
+	defer mockCtrl.Finish()
 
-	mockUploadFileInfo := monitor.UploadFileInfo{Path: "MOCKPATH", Info: mockFileInfo}
-	compressFileCalled := false
-	defer util.Patch(&compressFile, func(uploadFile monitor.UploadFileInfo) (monitor.UploadFileInfo, error) {
-		compressFileCalled = true
-		c.Assert(uploadFile, Equals, mockUploadFileInfo)
-		return monitor.UploadFileInfo{Path: "MOCKPATH", Info: mockFileInfo}, nil
-	}).Restore()
-	compress := CompressPrehook{}
-	mockUploads := []monitor.UploadFileInfo{mockUploadFileInfo}
-	compress.RunPrehook(mockUploads)
-	c.Assert(compressFileCalled, Equals, true)
+	mockCompressor := mocks.NewMockCompressor(mockCtrl)
+	uploadFile := "mockpath"
+	uploadFiles := []string{uploadFile}
+	mockCompressor.EXPECT().Compress(uploadFile).Return("newmockpath", nil)
+	compressionHook := NewCompressPrehook()
+	compressionHook.compressor = mockCompressor
+	compressionHook.SetUploadFiles(uploadFiles)
+	println(&uploadFiles)
+	newUploadFiles, _ := compressionHook.Run()
+	c.Assert(len(newUploadFiles), Equals, 1)
+	c.Assert(newUploadFiles[0], Equals, "newmockpath")
 }
 
 func (s *HookSuite) TestGetPrehooks(c *C) {
-	prehooker := mocks.NewMockPrehooker(s.mockCtrl)
-	mockPrehooks := []string{"mock_preehook"}
+
+	mockCtrl := gomock.NewController(c)
+	defer mockCtrl.Finish()
+
+	prehooker := mocks.NewMockCommander(mockCtrl)
+	mockPrehooks := []string{"mock_prehook"}
+	prehookMap := make(map[string]commands.Commander, 0)
 	RegisterPrehook("mock_prehook", prehooker)
-	prehookers := GetPrehooks(mockPrehooks)
-	c.Assert(len(prehookers), Equals, 1)
+
+	GetPrehookCommands(mockPrehooks, prehookMap)
+	_, ok := prehookMap["mock_prehook"]
+
+	c.Assert(len(prehookMap), Equals, 1)
+	c.Assert(ok, Equals, true)
 }
 
 func (s *HookSuite) TestRegisterCompressHook(c *C) {
-	prehook := CompressPrehook{}
+	prehook := &CompressPrehook{}
 	RegisterPrehook("mock_name", prehook)
 	c.Assert(registeredPrehooks["mock_name"], Equals, prehook)
 }

@@ -25,8 +25,11 @@ setGOPATH() {
 
 generateMocks() {
     echo Generating mocks
+    mockgen -package=mocks -source=./execution/execution.go > util/mocks/execution_mocks.go
+    mockgen -package=mocks -source=./commands/commands.go > util/mocks/commands_mocks.go
+    mockgen -package=mocks -source=./hooks/prehooks.go > util/mocks/prehooks_mocks.go
+    mockgen -package=mocks -source=./conf/conf.go > util/mocks/conf_mocks.go
     mockgen -package=mocks os FileInfo > util/mocks/os_mocks.go
-    mockgen -package=mocks -source=./hooks/prehooks.go > util/mocks/prehook_mocks.go
     echo Mocks generated
 }
 

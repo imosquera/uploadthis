@@ -5,7 +5,7 @@ import (
 	"path"
 )
 
-var GetUploadFiles = func(dirPath string) []string {
+func GetUploadFiles(dirPath string) []string {
 	allFiles := make([]string, 0)
 	files, _ := ioutil.ReadDir(dirPath)
 	for _, dirFile := range files {

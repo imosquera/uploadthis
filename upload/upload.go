@@ -1,4 +1,4 @@
-package uploadthis
+package upload
 
 import (
 	"github.com/imosquera/uploadthis/conf"

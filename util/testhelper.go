@@ -1,18 +1,8 @@
 package util
 
 import (
-	"os"
-	"path"
 	"reflect"
 )
-
-var RootProjectPath string = setupRootProjectPath()
-
-func setupRootProjectPath() string {
-	realGopath := os.Getenv("ORIG_GOPATH")
-	realGopath = path.Join(realGopath, "src/github.com/imosquera/uploadthis")
-	return realGopath
-}
 
 // Restorer holds a function that can be used
 // to restore some previous state.

@@ -2,9 +2,8 @@ package main
 
 import (
 	"code.google.com/p/gomock/gomock"
-	"github.com/imosquera/uploadthis/commands"
-	"github.com/imosquera/uploadthis/conf" //mock
-	"github.com/imosquera/uploadthis/util"
+	"github.com/imosquera/uploadthis/conf"      //mock
+	"github.com/imosquera/uploadthis/execution" //mock
 	. "launchpad.net/gocheck"
 	"testing"
 )
@@ -32,32 +31,11 @@ func (s *MainSuite) TestMain(c *C) {
 	conf.MOCK().SetController(mockCtrl)
 	conf.EXPECT().ParseOpts().Return()
 
-	calledCommandsForMon := false
-	defer util.Patch(&executeCommandsForMonitors, func() {
-		calledCommandsForMon = true
-	}).Restore()
+	execution.MOCK().SetController(mockCtrl)
 
+	mgr := execution.DefaultCommandManager{}
+	mgr.EXPECT().ExecuteCommandsForMonitors()
+	execution.EXPECT().NewDefaultCommandManager().Return(mgr)
 	main()
 
-	c.Assert(calledCommandsForMon, Equals, true)
-}
-
-func (s *MainSuite) TestExecuteCommandsForMonitors(c *C) {
-	//this test is getting pretty big already, we should consider breaking up the main function into smaller
-	//testable functions
-	mockCtrl := gomock.NewController(c)
-	defer mockCtrl.Finish()
-
-	conf.Settings.MonitorDirs = []conf.MonitorDir{
-		conf.MonitorDir{Path: "mockpath"},
-	}
-
-	calledCommandList := false
-	defer util.Patch(&createCommandList, func(monitorDir *conf.MonitorDir) map[string]commands.Commander {
-		calledCommandList = true
-		return nil
-	}).Restore()
-
-	executeCommandsForMonitors()
-	c.Assert(calledCommandList, Equals, true)
 }

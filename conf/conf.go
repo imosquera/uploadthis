@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var Settings uploadthisConfig
+var Settings UploadthisConfig
 
 var opts struct {
 	ConfigPath string `short:"c" long:"config" description:"config path"`
@@ -24,21 +24,21 @@ type MonitorDir struct {
 	PostHooks []string
 }
 
-type uploadthisConfig struct {
+type UploadthisConfig struct {
 	Auth struct {
 		AccessKey, SecretKey string
 	}
 	MonitorDirs []MonitorDir
 }
 
-var optsParser = flags.Parse
+var configLoader ConfigLoader = &YamlConfigLoader{}
 
 func ParseOpts() {
 
-	optsParser(&opts)
+	flags.Parse(&opts)
 
 	if opts.ConfigPath != "" {
-		loadConfig(opts.ConfigPath)
+		configLoader.LoadConfig(opts.ConfigPath, &Settings)
 	}
 
 	if opts.AccesssKey != "" && opts.SecretKey != "" {
@@ -47,16 +47,19 @@ func ParseOpts() {
 	}
 }
 
-var loadConfig = func(path string) {
-	file, err := os.Open(path) // For read access.
-	e, _ := os.Getwd()
-	println(e)
+type ConfigLoader interface {
+	LoadConfig(path string, settings interface{})
+}
 
+type YamlConfigLoader struct{}
+
+func (self *YamlConfigLoader) LoadConfig(path string, settings interface{}) {
+	file, err := os.Open(path) // For read access.
 	if err != nil {
 		log.Panic("can't open config file", err)
 	}
 	configString, err := ioutil.ReadAll(file)
-	err = goyaml.Unmarshal(configString, &Settings)
+	err = goyaml.Unmarshal(configString, settings)
 	if err != nil {
 		log.Panic("can't unmarshal the yaml file", err)
 	}
