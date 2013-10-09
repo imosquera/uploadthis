@@ -74,6 +74,7 @@ build () {
     go get -v github.com/qur/withmock/mocktest
     go get -v launchpad.net/gocheck
     go get -v github.com/matm/gocov-html
+    go get -v github.com/bradfitz/goimports
 
     echo 
     echo -n "The packages have been downloaded and installed here: "
