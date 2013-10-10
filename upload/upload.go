@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
 	"io"
 	"launchpad.net/goamz/aws"
@@ -8,21 +9,26 @@ import (
 	"log"
 )
 
-type S3Uploader struct {
+type UploadCommand struct {
+	commands.Command
+	uploader Uploader
 }
 
-// type Commander interface {
-// 	SetUploadFiles(uploadFiles []string)
-// 	Prepare(workDir string)
-// 	Run() ([]string, error)
-// }
-
-func (self *S3Uploader) SetUploadFiles() {
-
+func (self *UploadCommand) Run() ([]string, error) {
+	//uploadfiles
+	for _, file := range self.UploadFiles {
+		println(file)
+	}
+	return []string{}, nil
 }
+
+type Uploader interface {
+	Upload(bucket string, path string, data io.Reader, length int64) error
+}
+
+type S3Uploader struct{}
 
 var s3Conn *s3.S3
-
 var GetS3 = func() *s3.S3 {
 	if s3Conn == nil {
 		auth := aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
@@ -49,6 +55,7 @@ func UploadReader(s *s3.S3, bucket string, path string, data io.Reader, length i
 	return err
 }
 
+/*
 func DownloadBytes(s *s3.S3, bucket string, path string) ([]byte, error) {
 	b := s.Bucket(bucket)
 	data, err := b.Get(path)
@@ -71,4 +78,4 @@ func DownloadReader(s *s3.S3, bucket string, path string) (io.ReadCloser, error)
 		return data, err
 	}
 	return nil, err
-}
+}*/
