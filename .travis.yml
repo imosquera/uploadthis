@@ -4,5 +4,6 @@ go: 1.1
 install:
     - ./run.sh -n
 script:
+    - env
     - go get -v ./...
     - PATH=$PATH:$HOME/gopath/bin $HOME/gopath/bin/mocktest ./... 
