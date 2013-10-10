@@ -12,7 +12,6 @@ import (
 var registeredPrehooks map[string]commands.Commander
 
 func RegisterPrehook(name string, prehook commands.Commander) {
-
 	if registeredPrehooks == nil {
 		registeredPrehooks = make(map[string]commands.Commander, 5)
 	}

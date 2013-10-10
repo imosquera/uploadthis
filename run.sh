@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#this makes sure the script stops running if there are any failures
+set -e
+
 setGOPATH() {
     echo 
     echo "GOPATH is a workspace where your go files, libraries and projects will be placed."
@@ -24,13 +27,24 @@ setGOPATH() {
 }
 
 generateMocks() {
-    echo Generating mocks
+    set -x
+    #we have to build the packages so we can use reflection to find them and generate the mocks
+    go get ./...
+
+    #lets start generating mocks
     mockgen -package=mocks -source=./execution/execution.go > util/mocks/execution_mocks.go
     mockgen -package=mocks -source=./commands/commands.go > util/mocks/commands_mocks.go
     mockgen -package=mocks -source=./hooks/prehooks.go > util/mocks/prehooks_mocks.go
-    mockgen -package=mocks -source=./conf/conf.go > util/mocks/conf_mocks.go
     mockgen -package=mocks os FileInfo > util/mocks/os_mocks.go
-    echo Mocks generated
+    mockgen -package=mocks io Reader > util/mocks/io_mocks.go
+
+    #we generate using reflection because it exports package names into the parameters
+    #this is the preferred method to generate mocks
+    mockgen -package=mocks github.com/imosquera/uploadthis/conf ConfigLoader > util/mocks/conf_mocks.go
+    mockgen -package=mocks github.com/imosquera/uploadthis/util OSFile > util/mocks/conf_mocks.go
+    mockgen -package=mocks github.com/imosquera/uploadthis/upload Uploader > util/mocks/upload_mocks.go
+    set +x
+    echo "Mocks have been generated"
 }
 
 usage() {
@@ -66,6 +80,7 @@ build () {
     then
         interactive
     fi
+    set -x
     go get -v github.com/imosquera/uploadthis
     go get -v github.com/axw/gocov/gocov
     go get -v code.google.com/p/gomock/gomock
@@ -75,6 +90,7 @@ build () {
     go get -v launchpad.net/gocheck
     go get -v github.com/matm/gocov-html
     go get -v github.com/bradfitz/goimports
+    set +x
 
     echo 
     echo -n "The packages have been downloaded and installed here: "

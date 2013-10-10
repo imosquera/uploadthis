@@ -1,81 +1,67 @@
 package upload
 
 import (
+	"fmt"
 	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
-	"io"
+	"github.com/imosquera/uploadthis/util"
 	"launchpad.net/goamz/aws"
 	"launchpad.net/goamz/s3"
-	"log"
+	"os"
+	"path"
 )
 
+//this upload command is the base for all types of uploading to a destination
 type UploadCommand struct {
 	commands.Command
 	uploader Uploader
 }
 
-func (self *UploadCommand) Run() ([]string, error) {
-	//uploadfiles
-	for _, file := range self.UploadFiles {
-		println(file)
+//the only constructor for generating a upload command
+func NewUploadCommand(destination string) *UploadCommand {
+	return &UploadCommand{
+		uploader: NewS3Uploader(destination),
 	}
-	return []string{}, nil
+}
+
+//the run command for the stand upload command
+func (self *UploadCommand) Run() ([]string, error) {
+	for _, file := range self.UploadFiles {
+		self.uploader.Upload(file)
+	}
+	return self.UploadFiles, nil
 }
 
 type Uploader interface {
-	Upload(bucket string, path string, data io.Reader, length int64) error
+	Upload(filePath string)
 }
 
-type S3Uploader struct{}
-
-var s3Conn *s3.S3
-var GetS3 = func() *s3.S3 {
-	if s3Conn == nil {
-		auth := aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
-		s3Conn = s3.New(auth, aws.USEast)
-	}
-	return s3Conn
+type S3Uploader struct {
+	bucket *s3.Bucket
 }
 
-func UploadBytes(s *s3.S3, bucket string, path string, data []byte) error {
-	b := s.Bucket(bucket)
-	err := b.Put(path, data, "content-type", s3.Private)
-	if err != nil {
-		log.Println(err)
+func NewS3Uploader(bucket string) *S3Uploader {
+	auth := aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
+	s3Conn := s3.New(auth, aws.USEast)
+	return &S3Uploader{
+		bucket: s3Conn.Bucket(bucket),
 	}
-	return err
 }
 
-func UploadReader(s *s3.S3, bucket string, path string, data io.Reader, length int64) error {
-	b := s.Bucket(bucket)
-	err := b.PutReader(path, data, length, "content-type", s3.Private)
-	if err != nil {
-		log.Println(err)
-	}
-	return err
+func GeneratePathPrefix(fileInfo os.FileInfo) string {
+	modifyTime := fileInfo.ModTime()
+	return fmt.Sprintf("%04d-%02d-%02d", modifyTime.Year(), modifyTime.Month(), modifyTime.Day())
 }
 
-/*
-func DownloadBytes(s *s3.S3, bucket string, path string) ([]byte, error) {
-	b := s.Bucket(bucket)
-	data, err := b.Get(path)
-	if err != nil {
-		log.Println(err)
-		return []byte{}, err
-	} else {
-		return data, err
-	}
-	return []byte{}, err
-}
+//this method will upload to s3 based on the key strategy
+func (self *S3Uploader) Upload(filePath string) {
+	fileReader, err := util.Fs.Open(filePath)
+	util.LogPanic(err)
 
-func DownloadReader(s *s3.S3, bucket string, path string) (io.ReadCloser, error) {
-	b := s.Bucket(bucket)
-	data, err := b.GetReader(path)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	} else {
-		return data, err
-	}
-	return nil, err
-}*/
+	fileInfo, _ := fileReader.Stat()
+	pathPrefix := GeneratePathPrefix(fileInfo)
+	key := path.Join(pathPrefix, path.Base(filePath))
+
+	err = self.bucket.PutReader(key, fileReader, fileInfo.Size(), "text/plain", s3.Private)
+	util.LogPanic(err)
+}

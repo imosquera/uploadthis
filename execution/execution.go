@@ -5,6 +5,7 @@ import (
 	"github.com/imosquera/uploadthis/conf"
 	"github.com/imosquera/uploadthis/hooks"
 	"github.com/imosquera/uploadthis/monitor"
+	"github.com/imosquera/uploadthis/upload"
 	"path"
 )
 
@@ -39,7 +40,7 @@ func (self *ConfigCommandProducer) CreateCommandList(monitorDir *conf.MonitorDir
 	commanders := make(map[string]commands.Commander, 5)
 	for _, monitorDir := range conf.Settings.MonitorDirs {
 		hooks.GetPrehookCommands(monitorDir.PreHooks, commanders)
-		//upload file commands
+		commanders["upload"] = upload.NewUploadCommand(monitorDir.Bucket)
 		//post commit commands
 	}
 	return commanders
