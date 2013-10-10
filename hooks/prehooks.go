@@ -9,21 +9,6 @@ import (
 	"path"
 )
 
-var registeredPrehooks map[string]commands.Commander
-
-func RegisterPrehook(name string, prehook commands.Commander) {
-	if registeredPrehooks == nil {
-		registeredPrehooks = make(map[string]commands.Commander, 5)
-	}
-	registeredPrehooks[name] = prehook
-}
-
-func GetPrehookCommands(prehooks []string, prehookCommands map[string]commands.Commander) {
-	for _, prehook := range prehooks {
-		prehookCommands[prehook] = registeredPrehooks[prehook]
-	}
-}
-
 //*********************
 // COMPRESSOR
 //*********************

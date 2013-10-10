@@ -4,7 +4,6 @@ import (
 	"code.google.com/p/gomock/gomock"
 	mockgz "compress/gzip" //mock
 	"compress/gzip"
-	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/util" //mock
 	"github.com/imosquera/uploadthis/util/mocks"
 	"io" //mock
@@ -15,19 +14,19 @@ import (
 )
 
 // Hook up gocheck into the "go test" runner.
-func Test(t *testing.T) { TestingT(t) }
+func TestPrehooks(t *testing.T) { TestingT(t) }
 
-type HookSuite struct{}
+type PreHookSuite struct{}
 
-var _ = Suite(&HookSuite{})
+var _ = Suite(&PreHookSuite{})
 
-func (s *HookSuite) SetupTest(c *C) {
+func (s *PreHookSuite) SetupTest(c *C) {
 }
 
-func (s *HookSuite) TearDownTest(c *C) {
+func (s *PreHookSuite) TearDownTest(c *C) {
 }
 
-func (s *HookSuite) TestGzipCompressFile(c *C) {
+func (s *PreHookSuite) TestGzipCompressFile(c *C) {
 	//I THINK SHOULD BE CHANGED TO TEST LEST OF IMPLEMNTATION AND MORE OF AN INTEGRATION TEST
 	//setup a mock controller
 	mockCtrl := gomock.NewController(c)
@@ -63,7 +62,7 @@ func (s *HookSuite) TestGzipCompressFile(c *C) {
 
 }
 
-func (s *HookSuite) TestRunCompressPrehook(c *C) {
+func (s *PreHookSuite) TestRunCompressPrehook(c *C) {
 	mockCtrl := gomock.NewController(c)
 	defer mockCtrl.Finish()
 
@@ -78,27 +77,4 @@ func (s *HookSuite) TestRunCompressPrehook(c *C) {
 	newUploadFiles, _ := compressionHook.Run()
 	c.Assert(len(newUploadFiles), Equals, 1)
 	c.Assert(newUploadFiles[0], Equals, "newmockpath")
-}
-
-func (s *HookSuite) TestGetPrehooks(c *C) {
-
-	mockCtrl := gomock.NewController(c)
-	defer mockCtrl.Finish()
-
-	prehooker := mocks.NewMockCommander(mockCtrl)
-	mockPrehooks := []string{"mock_prehook"}
-	prehookMap := make(map[string]commands.Commander, 0)
-	RegisterPrehook("mock_prehook", prehooker)
-
-	GetPrehookCommands(mockPrehooks, prehookMap)
-	_, ok := prehookMap["mock_prehook"]
-
-	c.Assert(len(prehookMap), Equals, 1)
-	c.Assert(ok, Equals, true)
-}
-
-func (s *HookSuite) TestRegisterCompressHook(c *C) {
-	prehook := &CompressPrehook{}
-	RegisterPrehook("mock_name", prehook)
-	c.Assert(registeredPrehooks["mock_name"], Equals, prehook)
 }
