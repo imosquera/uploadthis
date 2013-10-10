@@ -1,5 +1,4 @@
 package uploadthis
 
 func init() {
-
 }
