@@ -5,4 +5,4 @@ install:
     - ./run.sh -n
 script:
     - go get -v ./...
-    - $HOME/gopath/bin/mocktest ./... | $HOME/gopath/bin/gocov report
+    - PATH=$HOME/gopath/bin $HOME/gopath/bin/mocktest ./... | $HOME/gopath/bin/gocov report
