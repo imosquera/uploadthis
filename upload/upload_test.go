@@ -59,10 +59,3 @@ func (s *UploadSuite) Run(c *C) {
 	uploadCommand.UploadFiles = []string{"mockpath"}
 	uploadCommand.Run()
 }
-
-// func (self *UploadCommand) Run() ([]string, error) {
-//     for _, file := range self.UploadFiles {
-//         self.uploader.Upload(file)
-//     }
-//     return self.UploadFiles, nil
-// }
