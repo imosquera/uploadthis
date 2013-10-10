@@ -39,8 +39,9 @@ type ConfigCommandProducer struct{}
 func (self *ConfigCommandProducer) CreateCommandList(monitorDir *conf.MonitorDir) map[string]commands.Commander {
 	commanders := make(map[string]commands.Commander, 5)
 	for _, monitorDir := range conf.Settings.MonitorDirs {
-		hooks.GetPrehookCommands(monitorDir.PreHooks, commanders)
+		hooks.GetHookCommands(hooks.PREHOOK, monitorDir.PreHooks, commanders)
 		commanders["upload"] = upload.NewUploadCommand(monitorDir.Bucket)
+		hooks.GetHookCommands(hooks.POSTHOOK, monitorDir.PreHooks, commanders)
 		//post commit commands
 	}
 	return commanders

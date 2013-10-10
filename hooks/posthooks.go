@@ -13,6 +13,5 @@ type ArchiveCommand struct {
 //empty archive command.  There is nothing to do in this step
 //since the prepare command already moves the files to the right place
 func (self *ArchiveCommand) Run() ([]string, error) {
-	return self.UploadFiles
-
+	return self.UploadFiles, nil
 }
