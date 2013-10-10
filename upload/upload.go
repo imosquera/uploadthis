@@ -8,6 +8,19 @@ import (
 	"log"
 )
 
+type S3Uploader struct {
+}
+
+// type Commander interface {
+// 	SetUploadFiles(uploadFiles []string)
+// 	Prepare(workDir string)
+// 	Run() ([]string, error)
+// }
+
+func (self *S3Uploader) SetUploadFiles() {
+
+}
+
 var s3Conn *s3.S3
 
 var GetS3 = func() *s3.S3 {

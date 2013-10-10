@@ -19,21 +19,6 @@ func RegisterPrehook(name string, prehook commands.Commander) {
 	registeredPrehooks[name] = prehook
 }
 
-type Prehook struct {
-	uploadFiles []string
-}
-
-func (self *Prehook) Prepare(workDir string) {
-	//uploadFiles = MoveToWorkDir(workDir, uploadFiles)
-	//paths := monitor.GetUploadFiles(workDir)
-	//uploadFiles = append(uploadFiles, paths...)
-	//uploadFiles, _ = command.Run(uploadFiles)
-}
-
-func (self *Prehook) SetUploadFiles(uploadFiles []string) {
-	self.uploadFiles = uploadFiles
-}
-
 func GetPrehookCommands(prehooks []string, prehookCommands map[string]commands.Commander) {
 	for _, prehook := range prehooks {
 		prehookCommands[prehook] = registeredPrehooks[prehook]
@@ -77,7 +62,7 @@ func NewCompressPrehook() *CompressPrehook {
 }
 
 type CompressPrehook struct {
-	Prehook
+	commands.Command
 	compressor Compressor
 }
 
@@ -85,8 +70,8 @@ type CompressPrehook struct {
 //return a file pointer that is readible
 func (c CompressPrehook) Run() ([]string, error) {
 	var err error
-	newFiles := make([]string, 0, len(c.uploadFiles))
-	for _, uploadFile := range c.uploadFiles {
+	newFiles := make([]string, 0, len(c.UploadFiles))
+	for _, uploadFile := range c.UploadFiles {
 		uploadFile, _ := c.compressor.Compress(uploadFile)
 		newFiles = append(newFiles, uploadFile)
 	}
