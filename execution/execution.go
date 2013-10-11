@@ -9,33 +9,13 @@ import (
 	"path"
 )
 
-// func MakeDirWithWarning(dirPath string) {
-// 	err := os.Mkdir(dirPath, 0755)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// }
-
-// func MakeWorkDir(dirPath string) {
-// 	MakeDirWithWarning(dirPath)
-// }
-
-// func MoveToWorkDir(workDir string, uploadFiles []string) []string {
-// 	newUploadFiles := make([]string, 0, len(uploadFiles))
-// 	for _, uploadFileInfo := range uploadFiles {
-// 		filename := path.Base(uploadFileInfo)
-// 		workFile := path.Join(workDir, filename)
-// 		os.Rename(uploadFileInfo, workFile)
-// 	}
-// 	return newUploadFiles
-// }
-
 type CommandProducer interface {
 	CreateCommandList(monitorDir *conf.MonitorDir) map[string]commands.Commander
 }
 
 type ConfigCommandProducer struct{}
 
+//builds a command list based on the monitor dirs in the yaml config
 func (self *ConfigCommandProducer) CreateCommandList(monitorDir *conf.MonitorDir) map[string]commands.Commander {
 	commanders := make(map[string]commands.Commander, 5)
 	for _, monitorDir := range conf.Settings.MonitorDirs {
