@@ -41,12 +41,13 @@ type Compressor interface {
 
 func NewCompressPrehook() *CompressPrehook {
 	return &CompressPrehook{
-		compressor: &GzipFileCompressor{},
+		commands.NewFileStateCommand(),
+		&GzipFileCompressor{},
 	}
 }
 
 type CompressPrehook struct {
-	commands.Command
+	*commands.Command
 	compressor Compressor
 }
 

@@ -21,8 +21,7 @@ func (self *ConfigCommandProducer) CreateCommandList(monitorDir *conf.MonitorDir
 	for _, monitorDir := range conf.Settings.MonitorDirs {
 		hooks.GetHookCommands(hooks.PREHOOK, monitorDir.PreHooks, commanders)
 		commanders["upload"] = upload.NewUploadCommand(monitorDir)
-		hooks.GetHookCommands(hooks.POSTHOOK, monitorDir.PreHooks, commanders)
-		//post commit commands
+		hooks.GetHookCommands(hooks.POSTHOOK, monitorDir.PostHooks, commanders)
 	}
 	return commanders
 }
@@ -36,6 +35,7 @@ type SequentialCommandExecutor struct{}
 func (self *SequentialCommandExecutor) ExecuteCommands(commandList map[string]commands.Commander, monitorDir conf.MonitorDir) {
 	uploadFiles := util.GetFilesFromDir(monitorDir.Path)
 	for name, command := range commandList {
+		log.Infof("Using command:%s for monitor path: %s", name, monitorDir.Path)
 		command.SetMonitor(monitorDir)
 		command.SetName(name)
 		command.SetUploadFiles(uploadFiles)

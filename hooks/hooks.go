@@ -35,6 +35,16 @@ func RegisterHook(hookType int, name string, prehook commands.Commander) {
 func GetHookCommands(hookType int, hooks []string, hookCommands map[string]commands.Commander) {
 	hookMap := GetHookMap(hookType)
 	for _, hook := range hooks {
-		hookCommands[hook] = hookMap[hook]
+		if theHook, ok := hookMap[hook]; ok {
+			hookCommands[hook] = theHook
+		} else {
+			panic("couldn't find key:" + hook + " in hook map")
+		}
 	}
+}
+
+func init() {
+	//register prehooks
+	RegisterHook(PREHOOK, "compress", NewCompressPrehook())
+	RegisterHook(POSTHOOK, "archive", NewArchiveCommand())
 }

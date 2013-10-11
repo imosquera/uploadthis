@@ -4,10 +4,16 @@ import (
 	"github.com/imosquera/uploadthis/commands"
 )
 
+func NewArchiveCommand() *ArchiveCommand {
+	return &ArchiveCommand{
+		commands.NewFileStateCommand(),
+	}
+}
+
 //The archive command moves files into the archive folder for later deletion
 //from some other process
 type ArchiveCommand struct {
-	commands.Command
+	*commands.Command
 }
 
 //empty archive command.  There is nothing to do in this step

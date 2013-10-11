@@ -7,6 +7,6 @@ monitordirs:
       prehooks:
         - compress
       posthooks:
-        - delete
+        - archive 
 logdir: /var/log/
 
