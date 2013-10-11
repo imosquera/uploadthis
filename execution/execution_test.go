@@ -43,6 +43,7 @@ func (s *ExecutionSuite) TestExecuteCommands(c *C) {
 
 	mockCommand := mocks.NewMockCommander(mockCtrl)
 	mockCommand.EXPECT().SetUploadFiles(mockUploadFiles)
+	mockCommand.EXPECT().SetMonitor(mockMonitor)
 	mockCommand.EXPECT().SetName("mock")
 	mockCommand.EXPECT().Prepare()
 	mockCommand.EXPECT().Run()

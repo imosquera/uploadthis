@@ -8,6 +8,7 @@ import (
 )
 
 type Commander interface {
+	SetMonitor(conf.MonitorDir)
 	SetName(string)
 	SetUploadFiles([]string)
 	Prepare()
@@ -21,11 +22,14 @@ type Command struct {
 	Name           string
 }
 
-func NewFileStateCommand(monitorDir conf.MonitorDir) *Command {
+func NewFileStateCommand() *Command {
 	return &Command{
-		monitorDir:     monitorDir,
 		statePersistor: &FileStatePersistor{},
 	}
+}
+
+func (self *Command) SetMonitor(monitor conf.MonitorDir) {
+	self.monitorDir = monitor
 }
 
 func (self *Command) SetName(name string) {

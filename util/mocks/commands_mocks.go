@@ -4,6 +4,7 @@
 package mocks
 
 import (
+	conf "github.com/imosquera/uploadthis/conf"
 	gomock "code.google.com/p/gomock/gomock"
 )
 
@@ -26,6 +27,14 @@ func NewMockCommander(ctrl *gomock.Controller) *MockCommander {
 
 func (_m *MockCommander) EXPECT() *_MockCommanderRecorder {
 	return _m.recorder
+}
+
+func (_m *MockCommander) SetMonitor(_param0 conf.MonitorDir) {
+	_m.ctrl.Call(_m, "SetMonitor", _param0)
+}
+
+func (_mr *_MockCommanderRecorder) SetMonitor(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "SetMonitor", arg0)
 }
 
 func (_m *MockCommander) SetName(_param0 string) {

@@ -8,10 +8,9 @@ import (
 
 func main() {
 	defer log.Flush()
-	log.Info("uploadthis has started up...")
 	//this parsing options and does some additional configurations
 	conf.ParseOpts()
-
+	log.Info("uploadthis has started up...")
 	//this begins the execution chain
 	commandManager := execution.NewDefaultCommandManager()
 	commandManager.ExecuteCommandsForMonitors()

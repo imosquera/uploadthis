@@ -66,7 +66,7 @@ func (self *SeeLogConfig) ConfigLogger(settingsLogDir string) {
 	if settingsLogDir != "" {
 		logDir = settingsLogDir
 	} else {
-		logDir := self.defaultLogDir
+		logDir = self.defaultLogDir
 	}
 
 	if _, err := os.Stat(logDir); err != nil {

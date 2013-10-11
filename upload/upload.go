@@ -20,7 +20,7 @@ type UploadCommand struct {
 //the only constructor for generating a upload command
 func NewUploadCommand(monitorDir conf.MonitorDir) *UploadCommand {
 	return &UploadCommand{
-		commands.NewFileStateCommand(monitorDir),
+		commands.NewFileStateCommand(),
 		NewS3Uploader(monitorDir.Bucket),
 	}
 }
