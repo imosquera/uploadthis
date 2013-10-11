@@ -33,6 +33,10 @@ func (s *MySuite) TestAuthSet(c *C) {
 	mockConfLoader.EXPECT().LoadConfig("mockpath", &Settings).Return()
 	configLoader = mockConfLoader
 
+	mockLogConfig := mocks.NewMockLoggerConfig(mockCtrl)
+	mockLogConfig.EXPECT().ConfigLogger("")
+	loggerConfig = mockLogConfig
+
 	ParseOpts()
 
 	c.Assert(Settings.Auth.AccessKey, Equals, "MOCK KEY")

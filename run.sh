@@ -40,7 +40,7 @@ generateMocks() {
 
     #we generate using reflection because it exports package names into the parameters
     #this is the preferred method to generate mocks
-    mockgen -package=mocks github.com/imosquera/uploadthis/conf ConfigLoader > util/mocks/conf_mocks.go
+    mockgen -package=mocks github.com/imosquera/uploadthis/conf ConfigLoader,LoggerConfig > util/mocks/conf_mocks.go
     mockgen -package=mocks github.com/imosquera/uploadthis/util OSFile > util/mocks/util_mocks.go
     mockgen -package=mocks github.com/imosquera/uploadthis/upload Uploader > util/mocks/upload_mocks.go
     set +x
