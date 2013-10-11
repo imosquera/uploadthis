@@ -13,14 +13,15 @@ import (
 
 //this upload command is the base for all types of uploading to a destination
 type UploadCommand struct {
-	commands.Command
+	*commands.Command
 	uploader Uploader
 }
 
 //the only constructor for generating a upload command
-func NewUploadCommand(destination string) *UploadCommand {
+func NewUploadCommand(monitorDir conf.MonitorDir) *UploadCommand {
 	return &UploadCommand{
-		uploader: NewS3Uploader(destination),
+		commands.NewFileStateCommand(monitorDir),
+		NewS3Uploader(monitorDir.Bucket),
 	}
 }
 

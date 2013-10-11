@@ -4,9 +4,8 @@ import (
 	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
 	"github.com/imosquera/uploadthis/hooks"
-	"github.com/imosquera/uploadthis/monitor"
 	"github.com/imosquera/uploadthis/upload"
-	"path"
+	"github.com/imosquera/uploadthis/util"
 )
 
 type CommandProducer interface {
@@ -20,7 +19,7 @@ func (self *ConfigCommandProducer) CreateCommandList(monitorDir *conf.MonitorDir
 	commanders := make(map[string]commands.Commander, 5)
 	for _, monitorDir := range conf.Settings.MonitorDirs {
 		hooks.GetHookCommands(hooks.PREHOOK, monitorDir.PreHooks, commanders)
-		commanders["upload"] = upload.NewUploadCommand(monitorDir.Bucket)
+		commanders["upload"] = upload.NewUploadCommand(monitorDir)
 		hooks.GetHookCommands(hooks.POSTHOOK, monitorDir.PreHooks, commanders)
 		//post commit commands
 	}
@@ -33,12 +32,12 @@ type CommandExecutor interface {
 
 type SequentialCommandExecutor struct{}
 
-func (self *SequentialCommandExecutor) ExecuteCommands(commands map[string]commands.Commander, monitorDir conf.MonitorDir) {
-	uploadFiles := monitor.GetUploadFiles(monitorDir.Path)
-	for name, command := range commands {
-		workDir := path.Join(monitorDir.Path, name)
+func (self *SequentialCommandExecutor) ExecuteCommands(commandList map[string]commands.Commander, monitorDir conf.MonitorDir) {
+	uploadFiles := util.GetFilesFromDir(monitorDir.Path)
+	for name, command := range commandList {
+		command.SetName(name)
 		command.SetUploadFiles(uploadFiles)
-		command.Prepare(workDir)
+		command.Prepare()
 		uploadFiles, _ = command.Run()
 	}
 }

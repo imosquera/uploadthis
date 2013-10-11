@@ -1,27 +1,29 @@
 package commands
 
 import (
-	"io/ioutil"
-	"log"
+	"github.com/imosquera/uploadthis/conf"
+	"github.com/imosquera/uploadthis/util"
 	"os"
 	"path"
 )
 
 type Commander interface {
 	SetName(string)
-	SetUploadFiles(uploadFiles []string)
-	Prepare(workDir string)
+	SetUploadFiles([]string)
+	Prepare()
 	Run() ([]string, error)
 }
 
 type Command struct {
-	Name           string
+	monitorDir     conf.MonitorDir
 	UploadFiles    []string
 	statePersistor StatePersistor
+	Name           string
 }
 
-func NewFileStateCommander() *Command {
+func NewFileStateCommand(monitorDir conf.MonitorDir) *Command {
 	return &Command{
+		monitorDir:     monitorDir,
 		statePersistor: &FileStatePersistor{},
 	}
 }
@@ -34,16 +36,17 @@ func (self *Command) SetUploadFiles(uploadFiles []string) {
 	self.UploadFiles = uploadFiles
 }
 
-func (self *Command) Prepare(workDir string) {
+func (self *Command) Prepare() {
+	workDir := path.Join(self.monitorDir.Path, self.Name)
 	self.statePersistor.SetWorkDir(workDir)
-	self.UploadFiles = self.statePersistor.SetActive(self.UploadFiles)
-	self.statePersistor.AppendResume(self.UploadFiles)
+	self.statePersistor.SetActive(self.UploadFiles)
+	self.UploadFiles = self.statePersistor.GetActive()
 }
 
 type StatePersistor interface {
 	SetWorkDir(string)
 	SetActive([]string) []string
-	AppendResume([]string)
+	GetActive() []string
 }
 
 type FileStatePersistor struct {
@@ -54,8 +57,8 @@ func (self *FileStatePersistor) SetWorkDir(workDir string) {
 	self.WorkDir = workDir
 }
 
-func (self *FileStatePersistor) AppendResume(filePaths []string) {
-
+func (self *FileStatePersistor) GetActive() []string {
+	return util.GetFilesFromDir(self.WorkDir)
 }
 
 //set the active files by moving them into their own directory
@@ -67,23 +70,4 @@ func (self *FileStatePersistor) SetActive(filePaths []string) []string {
 		os.Rename(uploadFileInfo, workFile)
 	}
 	return newUploadFiles
-}
-
-func MakeDir(dirPath string) {
-	err := os.Mkdir(dirPath, 0755)
-	if err != nil {
-		log.Panic(err)
-	}
-}
-
-func GetUploadFiles(dirPath string) []string {
-	allFiles := make([]string, 0)
-	files, _ := ioutil.ReadDir(dirPath)
-	for _, dirFile := range files {
-		if !dirFile.IsDir() {
-			filePath := path.Join(dirPath, dirFile.Name())
-			allFiles = append(allFiles, filePath)
-		}
-	}
-	return allFiles
 }

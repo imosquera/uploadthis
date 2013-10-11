@@ -4,8 +4,8 @@ import (
 	"code.google.com/p/gomock/gomock"
 	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
-	"github.com/imosquera/uploadthis/hooks"   //mock
-	"github.com/imosquera/uploadthis/monitor" //mock
+	"github.com/imosquera/uploadthis/hooks" //mock
+	"github.com/imosquera/uploadthis/util"  //mock
 	"github.com/imosquera/uploadthis/util/mocks"
 	. "launchpad.net/gocheck"
 	"testing"
@@ -34,8 +34,8 @@ func (s *ExecutionSuite) TestExecuteCommands(c *C) {
 	defer mockCtrl.Finish()
 
 	mockUploadFiles := []string{"mockpaths"}
-	monitor.MOCK().SetController(mockCtrl)
-	monitor.EXPECT().GetUploadFiles("mockpath").Return(mockUploadFiles)
+	util.MOCK().SetController(mockCtrl)
+	util.EXPECT().GetFilesFromDir("mockpath").Return(mockUploadFiles)
 
 	hooks.MOCK().SetController(mockCtrl)
 
@@ -43,7 +43,8 @@ func (s *ExecutionSuite) TestExecuteCommands(c *C) {
 
 	mockCommand := mocks.NewMockCommander(mockCtrl)
 	mockCommand.EXPECT().SetUploadFiles(mockUploadFiles)
-	mockCommand.EXPECT().Prepare("mockpath/mock")
+	mockCommand.EXPECT().SetName("mock")
+	mockCommand.EXPECT().Prepare()
 	mockCommand.EXPECT().Run()
 
 	mockCommands := map[string]commands.Commander{

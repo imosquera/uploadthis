@@ -28,20 +28,28 @@ func (_m *MockCommander) EXPECT() *_MockCommanderRecorder {
 	return _m.recorder
 }
 
-func (_m *MockCommander) SetUploadFiles(uploadFiles []string) {
-	_m.ctrl.Call(_m, "SetUploadFiles", uploadFiles)
+func (_m *MockCommander) SetName(_param0 string) {
+	_m.ctrl.Call(_m, "SetName", _param0)
+}
+
+func (_mr *_MockCommanderRecorder) SetName(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "SetName", arg0)
+}
+
+func (_m *MockCommander) SetUploadFiles(_param0 []string) {
+	_m.ctrl.Call(_m, "SetUploadFiles", _param0)
 }
 
 func (_mr *_MockCommanderRecorder) SetUploadFiles(arg0 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "SetUploadFiles", arg0)
 }
 
-func (_m *MockCommander) Prepare(workDir string) {
-	_m.ctrl.Call(_m, "Prepare", workDir)
+func (_m *MockCommander) Prepare() {
+	_m.ctrl.Call(_m, "Prepare")
 }
 
-func (_mr *_MockCommanderRecorder) Prepare(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Prepare", arg0)
+func (_mr *_MockCommanderRecorder) Prepare() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Prepare")
 }
 
 func (_m *MockCommander) Run() ([]string, error) {
@@ -53,4 +61,53 @@ func (_m *MockCommander) Run() ([]string, error) {
 
 func (_mr *_MockCommanderRecorder) Run() *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "Run")
+}
+
+// Mock of StatePersistor interface
+type MockStatePersistor struct {
+	ctrl     *gomock.Controller
+	recorder *_MockStatePersistorRecorder
+}
+
+// Recorder for MockStatePersistor (not exported)
+type _MockStatePersistorRecorder struct {
+	mock *MockStatePersistor
+}
+
+func NewMockStatePersistor(ctrl *gomock.Controller) *MockStatePersistor {
+	mock := &MockStatePersistor{ctrl: ctrl}
+	mock.recorder = &_MockStatePersistorRecorder{mock}
+	return mock
+}
+
+func (_m *MockStatePersistor) EXPECT() *_MockStatePersistorRecorder {
+	return _m.recorder
+}
+
+func (_m *MockStatePersistor) SetWorkDir(_param0 string) {
+	_m.ctrl.Call(_m, "SetWorkDir", _param0)
+}
+
+func (_mr *_MockStatePersistorRecorder) SetWorkDir(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "SetWorkDir", arg0)
+}
+
+func (_m *MockStatePersistor) SetActive(_param0 []string) []string {
+	ret := _m.ctrl.Call(_m, "SetActive", _param0)
+	ret0, _ := ret[0].([]string)
+	return ret0
+}
+
+func (_mr *_MockStatePersistorRecorder) SetActive(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "SetActive", arg0)
+}
+
+func (_m *MockStatePersistor) GetActive() []string {
+	ret := _m.ctrl.Call(_m, "GetActive")
+	ret0, _ := ret[0].([]string)
+	return ret0
+}
+
+func (_mr *_MockStatePersistorRecorder) GetActive() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "GetActive")
 }
