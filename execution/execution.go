@@ -1,6 +1,7 @@
 package execution
 
 import (
+	log "github.com/cihub/seelog"
 	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
 	"github.com/imosquera/uploadthis/hooks"
@@ -59,7 +60,9 @@ type DefaultCommandManager struct {
 }
 
 func (self DefaultCommandManager) ExecuteCommandsForMonitors() {
+	log.Info("Found %d monitor dirs", len(conf.Settings.MonitorDirs))
 	for _, monitorDir := range conf.Settings.MonitorDirs {
+		log.Info("Working on monitor dir: ", monitorDir.Path)
 		commandList := self.Producer.CreateCommandList(&monitorDir)
 		self.Executor.ExecuteCommands(commandList, monitorDir)
 	}

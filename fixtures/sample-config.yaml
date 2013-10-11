@@ -8,4 +8,5 @@ monitordirs:
         - compress
       posthooks:
         - delete
+logdir: /var/log/upload/
 
