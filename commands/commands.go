@@ -59,6 +59,8 @@ type FileStatePersistor struct {
 }
 
 func (self *FileStatePersistor) SetWorkDir(workDir string) {
+	log.Infof("Setting workdir to: %s", workDir)
+	util.MakeDir(workDir)
 	self.WorkDir = workDir
 }
 
@@ -71,10 +73,11 @@ func (self *FileStatePersistor) SetActive(filePaths []string) []string {
 	newUploadFiles := make([]string, 0, len(filePaths))
 	log.Infof("Setting %d files to active", len(filePaths))
 	for _, uploadFileInfo := range filePaths {
-
 		filename := path.Base(uploadFileInfo)
 		workFile := path.Join(self.WorkDir, filename)
-		os.Rename(uploadFileInfo, workFile)
+		log.Infof("Setting %s to %s to be active", uploadFileInfo, workFile)
+		err := os.Rename(uploadFileInfo, workFile)
+		util.LogPanic(err)
 	}
 	return newUploadFiles
 }

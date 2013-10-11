@@ -3,7 +3,6 @@ package util
 import (
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 )
@@ -35,9 +34,13 @@ func (OsFs) Create(name string) (*os.File, error)  { return os.Create(name) }
 
 //more utility functions to make a dir
 func MakeDir(dirPath string) {
-	err := os.Mkdir(dirPath, 0755)
-	if err != nil {
-		log.Panic(err)
+	if _, err := os.Stat(dirPath); err == nil {
+		err := os.Mkdir(dirPath, 0755)
+		if err != nil {
+			LogPanic(err)
+		}
+	} else {
+		LogPanic(err)
 	}
 }
 

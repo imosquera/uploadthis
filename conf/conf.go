@@ -37,6 +37,7 @@ type UploadthisConfig struct {
 var configLoader ConfigLoader = &YamlConfigLoader{}
 var loggerConfig LoggerConfig = &SeeLogConfig{defaultLogDir: "/var/log"}
 
+//parses command line options into a UploadthisConfig structure
 func ParseOpts() {
 	//this setups the logger so that it prints file numbers
 	flags.Parse(&opts)
