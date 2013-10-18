@@ -45,6 +45,8 @@ func ParseOpts() {
 	if opts.ConfigPath != "" {
 		log.Info("loading config from: ", opts.ConfigPath)
 		configLoader.LoadConfig(opts.ConfigPath, &Settings)
+	} else {
+
 	}
 
 	if opts.AccesssKey != "" && opts.SecretKey != "" {

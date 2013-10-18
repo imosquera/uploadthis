@@ -39,3 +39,11 @@ func (s *MainSuite) TestMain(c *C) {
 	main()
 
 }
+
+func (s *MainSuite) setupIntegrationFixtures() {
+
+}
+
+func (s *MainSuite) TestMainIntegration(c *C) {
+	s.setupIntegrationFixtures()
+}

@@ -42,7 +42,7 @@ func (self *Command) SetUploadFiles(uploadFiles []string) {
 }
 
 func (self *Command) Prepare() {
-	workDir := path.Join(self.monitorDir.Path, self.Name)
+	workDir := path.Join(self.monitorDir.Path, ".uploadthis", self.Name)
 	self.statePersistor.SetWorkDir(workDir)
 	self.statePersistor.SetActive(self.UploadFiles)
 	self.UploadFiles = self.statePersistor.GetActive()

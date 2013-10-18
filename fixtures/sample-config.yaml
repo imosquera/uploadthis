@@ -2,7 +2,7 @@ auth:
     accesskey: myaccesskey
     secretkey: mysupersecretkey
 monitordirs: 
-    - path: fixtures/monitordir/
+    - path: /tmp/fixtures/monitordir/
       bucket: 34
       prehooks:
         - compress
