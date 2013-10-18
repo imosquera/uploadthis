@@ -66,7 +66,7 @@ interactive() {
         echo -e '\033[33m'"Your GOPATH is not set!\033[0m";
         setGOPATH
     else
-        echo -n "Using $GOPATH, Would you like to set a new one? (y/n): "
+        echo -n "Using $GOPATH as your GOPATH, Would you like to set a new one? (y/n): "
         read SET_NEWONE
         if [ "$SET_NEWONE" = "y" ]
         then
