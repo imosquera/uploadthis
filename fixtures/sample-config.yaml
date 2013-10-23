@@ -3,6 +3,7 @@ auth:
     secretkey: mysupersecretkey
 monitordirs: 
     - path: /tmp/fixtures/monitordir/
+      time_threshold: 1382534191
       bucket: 34
       prehooks:
         - compress
