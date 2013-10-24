@@ -37,7 +37,7 @@ func (s *UploadSuite) TestGeneratePathPrefix(c *C) {
 
 func formatDate(t time.Time) string {
 	year, month, day := t.Date()
-	return fmt.Sprintf("%04d-%02d-%02d", year, month, day)
+	return fmt.Sprintf("%04d/%02d/%02d", year, month, day)
 }
 func (s *UploadSuite) TestS3Upload(c *C) {
 	mockCtrl := gomock.NewController(c)
