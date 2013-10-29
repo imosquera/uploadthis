@@ -51,7 +51,7 @@ func NewS3Uploader(bucket string) *S3Uploader {
 
 func GeneratePathPrefix(fileInfo os.FileInfo) string {
 	modifyTime := fileInfo.ModTime()
-	return fmt.Sprintf("%04d/%02d/%02d", modifyTime.Year(), modifyTime.Month(), modifyTime.Day())
+	return fmt.Sprintf("%04d/%02d/%02d/%02d", modifyTime.Year(), modifyTime.Month(), modifyTime.Day(), modifyTime.Hour())
 }
 
 //this method will upload to s3 based on the key strategy
