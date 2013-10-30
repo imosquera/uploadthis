@@ -20,10 +20,11 @@ var opts struct {
 }
 
 type MonitorDir struct {
-	Path      string
-	Bucket    string
-	PreHooks  []string
-	PostHooks []string
+	Path          string
+	TimeThreshold int    `yaml:"time_threshold"`
+	Bucket        string
+	PreHooks      []string
+	PostHooks     []string
 }
 
 type UploadthisConfig struct {

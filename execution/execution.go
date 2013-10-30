@@ -33,7 +33,7 @@ type CommandExecutor interface {
 type SequentialCommandExecutor struct{}
 
 func (self *SequentialCommandExecutor) ExecuteCommands(commandList map[string]commands.Commander, monitorDir conf.MonitorDir) {
-	uploadFiles := util.GetFilesFromDir(monitorDir.Path)
+	uploadFiles := util.GetFilesFromDirByThreshold(monitorDir.Path, monitorDir.TimeThreshold)
 	for name, command := range commandList {
 		log.Infof("Using command:%s for monitor path: %s", name, monitorDir.Path)
 		command.SetMonitor(monitorDir)
