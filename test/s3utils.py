@@ -18,14 +18,14 @@ def get_file(bucket_name, document, output, aws_id=None, aws_key=None):
     try:
         print "Get bucket: {0}".format(bucket_name)
         bkt = conn.get_bucket(bucket_name)
-        document = "{0}/{1}".format(time.strftime("%Y-%m-%d"), document)
+        document = "{0}/{1}".format(time.strftime("%Y/%m/%d/%H"), document)
         print "Get file key: {0}".format(document)
         key = bkt.get_key(document)
         if key is None:
             print '\033[31m S3 ERROR: Cannot get file key from S3 for path: {0} \033[0m'.format(document)
             exit(1)
         print "Download to: {0}".format(output)
-        key.get_contents_to_filename(output) #FIXME
+        key.get_contents_to_filename(output)
         print "Delete document"
         bkt.delete_key(document)
     except S3ResponseError as e:
