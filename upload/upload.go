@@ -50,7 +50,7 @@ func NewS3Uploader(bucket string) *S3Uploader {
 }
 
 func GeneratePathPrefix(fileInfo os.FileInfo) string {
-	modifyTime := fileInfo.ModTime()
+	modifyTime := fileInfo.ModTime().UTC()
 	return fmt.Sprintf("%04d/%02d/%02d/%02d", modifyTime.Year(), modifyTime.Month(), modifyTime.Day(), modifyTime.Hour())
 }
 
