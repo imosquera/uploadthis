@@ -26,7 +26,7 @@ func (s *MySuite) TestAuthSet(c *C) {
 	flags.EXPECT().Parse(&opts)
 
 	opts.ConfigPath = "mockpath"
-	opts.AccesssKey = "MOCK KEY"
+	opts.AccessKey = "MOCK KEY"
 	opts.SecretKey = "MOCK SECRET"
 	mockConfLoader := mocks.NewMockConfigLoader(mockCtrl)
 
@@ -44,7 +44,7 @@ func (s *MySuite) TestAuthSet(c *C) {
 
 	//make sure we clean up when we're done
 	opts.ConfigPath = ""
-	opts.AccesssKey = ""
+	opts.AccessKey = ""
 	opts.SecretKey = ""
 }
 

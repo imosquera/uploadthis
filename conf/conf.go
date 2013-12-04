@@ -14,7 +14,7 @@ var Settings UploadthisConfig
 
 var opts struct {
 	ConfigPath string `short:"c" long:"config" description:"config path"`
-	AccesssKey string `long:"accesskey" short:"a" description:"aws access key"`
+	AccessKey string `long:"accesskey" short:"a" description:"aws access key"`
 	SecretKey  string `long:"secretkey" short:"s" description:"Call phone number"`
 	Usage      bool   `long:"usage" short:"u" description:"Print usage"`
 }
@@ -50,8 +50,8 @@ func ParseOpts() {
 
 	}
 
-	if opts.AccesssKey != "" && opts.SecretKey != "" {
-		Settings.Auth.AccessKey = opts.AccesssKey
+	if opts.AccessKey != "" && opts.SecretKey != "" {
+		Settings.Auth.AccessKey = opts.AccessKey
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
 	loggerConfig.ConfigLogger(Settings.Logdir)
