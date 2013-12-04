@@ -18,7 +18,7 @@ def get_file(bucket_name, document, output, aws_id=None, aws_key=None):
     try:
         print "Get bucket: {0}".format(bucket_name)
         bkt = conn.get_bucket(bucket_name)
-        document = "{0}/{1}".format(time.strftime("%Y/%m/%d/%H"), document)
+        document = "{0}/{1}".format(time.strftime("%Y/%m/%d/%H", time.gmtime()), document)
         print "Get file key: {0}".format(document)
         key = bkt.get_key(document)
         if key is None:
