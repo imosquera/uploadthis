@@ -1,13 +1,15 @@
+#When changing the file make sure the test/test.sh is not broken
 auth:
     accesskey: myaccesskey
     secretkey: mysupersecretkey
 monitordirs: 
-    - path: /tmp/fixtures/monitordir/
+    - path: /tmp/logs/loopy/event/
       time_threshold: 1382534191
       bucket: 34
       prehooks:
+        #- rename
         - compress
       posthooks:
-        - archive 
+        - archive
 logdir: /var/log/
 

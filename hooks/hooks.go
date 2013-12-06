@@ -45,6 +45,7 @@ func GetHookCommands(hookType int, hooks []string, hookCommands map[string]comma
 
 func init() {
 	//register prehooks
+	RegisterHook(PREHOOK, "rename", NewRenamePrehook())
 	RegisterHook(PREHOOK, "compress", NewCompressPrehook())
 	RegisterHook(POSTHOOK, "archive", NewArchiveCommand())
 }

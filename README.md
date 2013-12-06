@@ -30,3 +30,11 @@ Building
     go get github.com/imosquera/uploadthis
     cd $GOPATH/src/github.com/imosquera/uploadthis
     go build ./...
+    go install ./...
+
+Integration test
+=================
+
+  How to run integration test:
+
+    sh $GOPATH/src/github.com/imosquera/uploadthis/test/test.sh $GOPATH/src/github.com/imosquera/uploadthis/test/s3utils.py <AWS_KEY> <AWS_SECRET>

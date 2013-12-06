@@ -20,7 +20,7 @@ CONFIG_SAMPLE=$FIXTURES/sample-config.yaml
 TEMP_PATH=/tmp/fixtures
 LOG_PATH=$TEMP_PATH/monitordir
 CONFIG=$TEMP_PATH/config.yaml
-LOGGING=$TEMP_PATH/log
+LOGGING=/tmp/
 TESTPATH=$TEMP_PATH/download
 
 S3_BUCKET=loopy-analytics
@@ -34,7 +34,7 @@ echo "Copy files"
 cp $LOGS $LOG_PATH
 cp $LOGS $TEMP_PATH
 echo "Update config"
-sed -e "s/myaccesskey/$2/" -e "s/mysupersecretkey/$3/" -e "s/bucket: 34/bucket: $S3_BUCKET/" -e "s|/var/log/|$LOGGING|" < $CONFIG_SAMPLE > $CONFIG
+sed -e "s/myaccesskey/$2/" -e "s/mysupersecretkey/$3/" -e "s/bucket: 34/bucket: $S3_BUCKET/" -e "s|/tmp/logs/loopy/event/|$LOG_PATH|" -e "s|/var/log/|$LOGGING|" < $CONFIG_SAMPLE > $CONFIG
 
 echo "Run Upload tool"
 cd $GOPATH
