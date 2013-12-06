@@ -113,7 +113,7 @@ type RenamePrehook struct {
 func NewRenamePrehook() *RenamePrehook {
 	return &RenamePrehook{
 		commands.NewFileStateCommand(),
-		&UniqueSuffixRenamer{suffixLength: 5},
+		&UniqueSuffixRenamer{suffixLength: 2},
 	}
 }
 

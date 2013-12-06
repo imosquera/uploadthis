@@ -7,7 +7,7 @@ monitordirs:
       time_threshold: 1382534191
       bucket: 34
       prehooks:
-        #-rename
+        #- rename
         - compress
       posthooks:
         - archive
