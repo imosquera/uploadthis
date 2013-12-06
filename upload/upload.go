@@ -20,9 +20,15 @@ type UploadCommand struct {
 
 //the only constructor for generating a upload command
 func NewUploadCommand(monitorDir conf.MonitorDir) *UploadCommand {
+	var contentType string = "text/plain"
+	for _, item := range monitorDir.PreHooks {
+		if item == "compress" {
+			contentType = "application/gzip"
+		}
+	}
 	return &UploadCommand{
 		commands.NewFileStateCommand(),
-		NewS3Uploader(monitorDir.Bucket),
+		NewS3Uploader(monitorDir.Bucket, contentType),
 	}
 }
 
@@ -40,13 +46,15 @@ type Uploader interface {
 
 type S3Uploader struct {
 	bucket *s3.Bucket
+	contentType string
 }
 
-func NewS3Uploader(bucket string) *S3Uploader {
+func NewS3Uploader(bucket, contentType string) *S3Uploader {
 	auth := aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
 	s3Conn := s3.New(auth, aws.USEast)
 	return &S3Uploader{
 		bucket: s3Conn.Bucket(bucket),
+		contentType: contentType,
 	}
 }
 
@@ -65,6 +73,6 @@ func (self *S3Uploader) Upload(filePath string) {
 	key := path.Join(pathPrefix, path.Base(filePath))
 	log.Info("Upload to: ", key)
 
-	err = self.bucket.PutReader(key, fileReader, fileInfo.Size(), "text/plain", s3.Private)
+	err = self.bucket.PutReader(key, fileReader, fileInfo.Size(), self.contentType, s3.Private)
 	util.LogPanic(err)
 }
