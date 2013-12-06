@@ -9,6 +9,7 @@ import (
 	"launchpad.net/goamz/s3"
 	"os"
 	"path"
+	log "github.com/cihub/seelog"
 )
 
 //this upload command is the base for all types of uploading to a destination
@@ -50,7 +51,7 @@ func NewS3Uploader(bucket string) *S3Uploader {
 }
 
 func GeneratePathPrefix(fileInfo os.FileInfo) string {
-	modifyTime := fileInfo.ModTime()
+	modifyTime := fileInfo.ModTime().UTC()
 	return fmt.Sprintf("%04d/%02d/%02d/%02d", modifyTime.Year(), modifyTime.Month(), modifyTime.Day(), modifyTime.Hour())
 }
 
@@ -62,6 +63,7 @@ func (self *S3Uploader) Upload(filePath string) {
 	fileInfo, _ := fileReader.Stat()
 	pathPrefix := GeneratePathPrefix(fileInfo)
 	key := path.Join(pathPrefix, path.Base(filePath))
+	log.Info("Upload to: ", key)
 
 	err = self.bucket.PutReader(key, fileReader, fileInfo.Size(), "text/plain", s3.Private)
 	util.LogPanic(err)

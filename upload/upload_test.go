@@ -36,6 +36,7 @@ func (s *UploadSuite) TestGeneratePathPrefix(c *C) {
 }
 
 func formatDate(t time.Time) string {
+	t = t.UTC()
 	year, month, day := t.Date()
 	hour := t.Hour()
 	return fmt.Sprintf("%04d/%02d/%02d/%02d", year, month, day, hour)
