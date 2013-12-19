@@ -35,6 +35,9 @@ func (self *GzipFileCompressor) Compress(filepath string) (string, error) {
 	_, err = io.Copy(gzipWriter, inFile)
 	util.LogPanic(err)
 
+	err = os.Remove(filepath)
+	util.LogPanic(err)
+
 	gzipWriter.Close()
 	return gzipPath, err
 }
