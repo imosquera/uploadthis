@@ -33,6 +33,7 @@ mkdir -p $TESTPATH
 echo "Copy files"
 cp $LOGS $LOG_PATH
 cp $LOGS $TEMP_PATH
+touch $LOG_PATH/test.empty.json
 echo "Update config"
 sed -e "s/myaccesskey/$2/" -e "s/mysupersecretkey/$3/" -e "s/bucket: 34/bucket: $S3_BUCKET/" -e "s|/tmp/logs/loopy/event/|$LOG_PATH|" -e "s|/var/log/|$LOGGING|" < $CONFIG_SAMPLE > $CONFIG
 
@@ -41,8 +42,8 @@ cd $GOPATH
 bin/uploadthis -c $CONFIG
 
 echo "Check upload"
-echo python $1 -i $2 -a $3 -b $S3_BUCKET -d $TEST_FILE.gz -o $TESTPATH/$TEST_FILE.gz -c $TEMP_PATH/$TEST_FILE
-python $1 -i $2 -a $3 -b $S3_BUCKET -d $TEST_FILE.gz -o $TESTPATH/$TEST_FILE.gz -c $TEMP_PATH/$TEST_FILE
+echo python $1 -i $2 -a $3 -b $S3_BUCKET -d $TEST_FILE.gz -m $LOG_PATH -o $TESTPATH/$TEST_FILE.gz -c $TEMP_PATH/$TEST_FILE -e $LOG_PATH/test.empty.json
+python $1 -i $2 -a $3 -b $S3_BUCKET -d $TEST_FILE.gz -m $LOG_PATH -o $TESTPATH/$TEST_FILE.gz -c $TEMP_PATH/$TEST_FILE -e $LOG_PATH/test.empty.json
 
 echo "Cleanup"
 rm -r $TEMP_PATH
