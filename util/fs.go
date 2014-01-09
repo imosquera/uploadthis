@@ -51,7 +51,7 @@ func GetFilesFromDirByThreshold(dirPath string, timeThreshold int) []string {
 	allFiles := make([]string, 0)
 	files, _ := ioutil.ReadDir(dirPath)
 	for _, dirFile := range files {
-		if !dirFile.IsDir() && dirFile.ModTime().Unix() >= int64(timeThreshold) {
+		if !dirFile.IsDir() && dirFile.Size() > 0 && dirFile.ModTime().Unix() >= int64(timeThreshold) {
 			filePath := path.Join(dirPath, dirFile.Name())
 			allFiles = append(allFiles, filePath)
 		}

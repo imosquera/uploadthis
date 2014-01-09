@@ -4,6 +4,7 @@ from boto.exception import S3ResponseError
 from subprocess import call
 import filecmp
 import time
+import os
 
 
 def get_file(bucket_name, document, output, aws_id=None, aws_key=None):
@@ -39,7 +40,7 @@ def check_file(original, downloaded):
         call(['gzip', '-d', downloaded])
     except OSError as e:
         return e
-    print "Compare files: {0} <> {1}".format(original, downloaded[:-3])
+    print "Compare files: {0} == {1}".format(original, downloaded[:-3])
     if filecmp.cmp(original, downloaded[:-3]):
         return 0
     else:
@@ -48,12 +49,14 @@ def check_file(original, downloaded):
 
 if __name__ == '__main__':
     parser = OptionParser()
-    parser.add_option("-b", "--bucket",   dest="bucket",   default="loopy-analytics", metavar="test",      help="S3 bucket name")
-    parser.add_option("-d", "--document", dest="document", default="test.json.gz",    metavar="doc.txt",   help="S3 document name")
-    parser.add_option("-o", "--output",   dest="output",   default="/tmp/fixtures/download/test.json.gz", metavar="/tmp/downloaded.txt", help="output file location to save to")
-    parser.add_option("-c", "--compare",  dest="compare",  default="/tmp/fixtures/test.json",         metavar="/tmp/original.txt",   help="original file to compare with")
-    parser.add_option("-i", "--aws_id",   dest="aws_id",   default="",                metavar="MY KEY ID", help="AWS Key ID")
-    parser.add_option("-a", "--aws_key",  dest="aws_key",  default="",                metavar="MY SECRET", help="AWS Secret Key")
+    parser.add_option("-b", "--bucket",   dest="bucket",    default="loopy-analytics", metavar="test",      help="S3 bucket name")
+    parser.add_option("-d", "--document", dest="document",  default="test.json.gz",    metavar="doc.txt",   help="S3 document name")
+    parser.add_option("-m", "--monDir",   dest="monitordir",default="/tmp/fixtures/",  metavar="/tmp/log/", help="Monitor directory")
+    parser.add_option("-e", "--emptyDoc", dest="empty_doc", default="test.empty.json", metavar="empty.txt", help="Filename of local empty log that should not be processed")
+    parser.add_option("-o", "--output",   dest="output",    default="/tmp/fixtures/download/test.json.gz", metavar="/tmp/downloaded.txt", help="output file location to save to")
+    parser.add_option("-c", "--compare",  dest="compare",   default="/tmp/fixtures/test.json",         metavar="/tmp/original.txt",   help="original file to compare with")
+    parser.add_option("-i", "--aws_id",   dest="aws_id",    default="",                metavar="MY KEY ID", help="AWS Key ID")
+    parser.add_option("-a", "--aws_key",  dest="aws_key",   default="",                metavar="MY SECRET", help="AWS Secret Key")
 
     options, args = parser.parse_args()
 
@@ -61,6 +64,21 @@ if __name__ == '__main__':
     for opt, value in options.__dict__.items():
         if value:
             opts[opt] = value
+
+    if opts['empty_doc'] and not os.path.exists(opts['empty_doc']):
+        print "\033[31m ERROR. Empty log file missed but had to be ignored\033[0m"
+        exit(1)
+
+    #Check uploader temp directories to be empty after files processing
+    monitordir = opts['monitordir']
+    if not monitordir.endswith(os.path.sep):
+        monitordir += os.path.sep
+    tmp_dirs = ["compress", "upload"]
+    for sub_dir in tmp_dirs:
+        tmp_dir = "{0}.uploadthis/{1}".format(monitordir, sub_dir)
+        if os.listdir(tmp_dir) != []:
+            print "\033[31m ERROR. {0} folder is not empty after test\033[0m".format(tmp_dir)
+            exit(1)
 
     if not opts['aws_id'] or not opts['aws_key']:
         print "AWS credentials not provided. Assume AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables are set"
