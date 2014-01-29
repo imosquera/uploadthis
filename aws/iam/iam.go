@@ -28,7 +28,7 @@ func NewRolesFields(IamUrl string) (aws.Auth) {
 	body, err := ioutil.ReadAll(resp.Body)
 	util.LogPanic(err)
 	log.Info(body)
-	roleFields := new(RolesFields)
+	var roleFields RolesFields
 	json.Unmarshal(body, &roleFields)
 	//util.LogPanic(err)
 	log.Info(roleFields)
