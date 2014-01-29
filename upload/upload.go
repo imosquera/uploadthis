@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
+	"github.com/imosquera/uploadthis/aws/iam"
 	"github.com/imosquera/uploadthis/util"
 	"launchpad.net/goamz/aws"
 	"launchpad.net/goamz/s3"
@@ -50,7 +51,12 @@ type S3Uploader struct {
 }
 
 func NewS3Uploader(bucket, contentType string) *S3Uploader {
-	auth := aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
+	var auth aws.Auth
+	if conf.Settings.Auth.IAMURL != "" {
+		auth = iam.NewRolesFields(conf.Settings.Auth.IAMURL)
+	} else {
+		auth = aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
+	}
 	s3Conn := s3.New(auth, aws.USEast)
 	return &S3Uploader{
 		bucket: s3Conn.Bucket(bucket),

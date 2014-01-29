@@ -10,6 +10,10 @@ Dev Quick Start
 
     curl -fsSL https://raw.github.com/imosquera/uploadthis/master/run.sh -o /tmp/build.source && source /tmp/build.source
 
+For new boxes additionally install repository before setting up the project:
+
+    sudo apt-get install golang-go git-core mercurial meld bzr
+
 Goal
 ====
 To provide a process that can upload log data to s3 that is easily configurable through a YAML file.  The process should be flexible enough to handle many different use-cases such as time-based or size-based uploads while still being performant.
@@ -20,7 +24,7 @@ Log analysis is one of the most effective way to do analysis at a large scale.  
 
 Example Usage
 ==============
-uploadThis -c /etc/uploadconf.yaml
+uploadthis -c /etc/uploadconf.yaml
 
 Building
 =========
