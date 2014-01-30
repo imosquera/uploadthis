@@ -54,7 +54,8 @@ type S3Uploader struct {
 }
 
 func NewS3Uploader(bucket, contentType string) *S3Uploader {
-	auth, err := aws.GetAuth(conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey, "", time.Time())
+	exptdate := time.Now()
+	auth, err := aws.GetAuth(conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey, "", exptdate)
 	util.LogPanic(err)
 
 	//Mon Jan 2 15:04:05 MST 2006 (MST is GMT-0700)
