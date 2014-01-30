@@ -2,7 +2,7 @@
 auth:
     accesskey: myaccesskey
     secretkey: mysupersecretkey
-    iamurl: http://169.254.169.254/latest/meta-data/iam/security-credentials/LoopyRole
+    #iamurl: http://169.254.169.254/latest/meta-data/iam/security-credentials/LoopyRole
 monitordirs: 
     - path: /tmp/logs/loopy/event/
       time_threshold: 1382534191

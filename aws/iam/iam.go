@@ -20,19 +20,16 @@ type RolesFields struct {
 }
 
 func NewRolesFields(IamUrl string) (aws.Auth) {
-	log.Info(IamUrl)
 	resp, err := http.Get(IamUrl)
 	util.LogPanic(err)
 	defer resp.Body.Close()
-	log.Info(resp)
 	body, err := ioutil.ReadAll(resp.Body)
 	util.LogPanic(err)
-	log.Info(body)
 	var roleFields RolesFields
 	json.Unmarshal(body, &roleFields)
 	//util.LogPanic(err)
-	log.Info(roleFields)
+	log.Debug(roleFields)
 	auth := aws.Auth{roleFields.AccessKeyId, roleFields.SecretAccessKey}
-	log.Info(auth)
+	log.Info("IAM role credentials", auth)
 	return auth
 }
