@@ -1,8 +1,8 @@
 #When changing the file make sure the test/test.sh is not broken
+# Auth credentials are required only when IAM is not accessible/configured
 auth:
     accesskey: myaccesskey
     secretkey: mysupersecretkey
-    #iamurl: http://169.254.169.254/latest/meta-data/iam/security-credentials/LoopyRole
 monitordirs: 
     - path: /tmp/logs/loopy/event/
       time_threshold: 1382534191

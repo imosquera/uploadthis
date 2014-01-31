@@ -5,7 +5,7 @@ uploadthis
 A flexible, performant command line S3 uploader by your friends at ShareThis
 
 Dev Quick Start
-============
+===============
   To get started quickly: 
 
     curl -fsSL https://raw.github.com/imosquera/uploadthis/master/run.sh -o /tmp/build.source && source /tmp/build.source
@@ -23,11 +23,11 @@ Problem Description
 Log analysis is one of the most effective way to do analysis at a large scale.  As a first step in most analytic pipelines it is required to store and backup files in the cloud.  This however brings many complexities like time-based or size-based rollovers, bandwidth constraints, file-sizes, atomic operations and most importantly performance.  The burden is placed on the developer to handle all these operational complexities.  There should be a better way.
 
 Example Usage
-==============
+=============
 uploadthis -c /etc/uploadconf.yaml
 
 Building
-=========
+========
 
   How to build the code:
 
@@ -37,7 +37,7 @@ Building
     go install ./...
 
 Integration test
-=================
+================
 
   How to run integration test:
 
