@@ -30,7 +30,7 @@ type MonitorDir struct {
 
 type UploadthisConfig struct {
 	Auth struct {
-		AccessKey, SecretKey, IAMURL string
+		AccessKey, SecretKey string
 	}
 	MonitorDirs []MonitorDir
 	Logdir      string
@@ -54,10 +54,6 @@ func ParseOpts() {
 	if opts.AccessKey != "" && opts.SecretKey != "" {
 		Settings.Auth.AccessKey = opts.AccessKey
 		Settings.Auth.SecretKey = opts.SecretKey
-	}
-
-	if opts.IAMURL != "" {
-		Settings.Auth.IAMURL = opts.IAMURL
 	}
 
 	loggerConfig.ConfigLogger(Settings.Logdir)
