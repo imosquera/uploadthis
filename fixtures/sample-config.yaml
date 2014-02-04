@@ -1,4 +1,5 @@
 #When changing the file make sure the test/test.sh is not broken
+# Auth credentials are required only when IAM is not accessible/configured
 auth:
     accesskey: myaccesskey
     secretkey: mysupersecretkey

@@ -13,10 +13,11 @@ import (
 var Settings UploadthisConfig
 
 var opts struct {
-	ConfigPath string `short:"c" long:"config" description:"config path"`
-	AccessKey string `long:"accesskey" short:"a" description:"aws access key"`
-	SecretKey  string `long:"secretkey" short:"s" description:"Call phone number"`
-	Usage      bool   `long:"usage" short:"u" description:"Print usage"`
+	ConfigPath string `long:"config"    short:"c" description:"config path"`
+	AccessKey  string `long:"accesskey" short:"a" description:"AWS access key"`
+	SecretKey  string `long:"secretkey" short:"s" description:"AWS secret key"`
+	IAMURL     string `long:"imaurl"    short:"i" description:"IAM security credentials URL"`
+	Usage      bool   `long:"usage"     short:"u" description:"Print usage"`
 }
 
 type MonitorDir struct {
@@ -54,6 +55,7 @@ func ParseOpts() {
 		Settings.Auth.AccessKey = opts.AccessKey
 		Settings.Auth.SecretKey = opts.SecretKey
 	}
+
 	loggerConfig.ConfigLogger(Settings.Logdir)
 }
 

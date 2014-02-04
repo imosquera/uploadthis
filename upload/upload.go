@@ -5,10 +5,11 @@ import (
 	"github.com/imosquera/uploadthis/commands"
 	"github.com/imosquera/uploadthis/conf"
 	"github.com/imosquera/uploadthis/util"
-	"launchpad.net/goamz/aws"
-	"launchpad.net/goamz/s3"
+	"github.com/crowdmob/goamz/aws"
+	"github.com/crowdmob/goamz/s3"
 	"os"
 	"path"
+	"time"
 	log "github.com/cihub/seelog"
 )
 
@@ -50,7 +51,8 @@ type S3Uploader struct {
 }
 
 func NewS3Uploader(bucket, contentType string) *S3Uploader {
-	auth := aws.Auth{conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey}
+	auth, err := aws.GetAuth(conf.Settings.Auth.AccessKey, conf.Settings.Auth.SecretKey, "", time.Now())
+	util.LogPanic(err)
 	s3Conn := s3.New(auth, aws.USEast)
 	return &S3Uploader{
 		bucket: s3Conn.Bucket(bucket),
@@ -73,6 +75,6 @@ func (self *S3Uploader) Upload(filePath string) {
 	key := path.Join(pathPrefix, path.Base(filePath))
 	log.Info("Upload to: ", key)
 
-	err = self.bucket.PutReader(key, fileReader, fileInfo.Size(), self.contentType, s3.Private)
+	err = self.bucket.PutReader(key, fileReader, fileInfo.Size(), self.contentType, s3.Private, s3.Options{})
 	util.LogPanic(err)
 }
