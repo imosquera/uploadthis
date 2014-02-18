@@ -21,11 +21,12 @@ var opts struct {
 }
 
 type MonitorDir struct {
-	Path          string
-	TimeThreshold int    `yaml:"time_threshold"`
-	Bucket        string
-	PreHooks      []string
-	PostHooks     []string
+	Path            string
+	TimeThreshold   int    `yaml:"time_threshold"`
+	CleanupThreshold int    `yaml:"cleanup_threshold"`
+	Bucket          string
+	PreHooks        []string
+	PostHooks       []string
 }
 
 type UploadthisConfig struct {
@@ -39,7 +40,7 @@ type UploadthisConfig struct {
 var configLoader ConfigLoader = &YamlConfigLoader{}
 var loggerConfig LoggerConfig = &SeeLogConfig{defaultLogDir: "/var/log"}
 
-//parses command line options into a UploadthisConfig structure
+//parses command line options into a UploadThisConfig structure
 func ParseOpts() {
 	//this setups the logger so that it prints file numbers
 	flags.Parse(&opts)

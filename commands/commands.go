@@ -10,6 +10,7 @@ import (
 
 type Commander interface {
 	SetMonitor(conf.MonitorDir)
+	GetMonitor() conf.MonitorDir
 	SetName(string)
 	SetUploadFiles([]string)
 	Prepare()
@@ -31,6 +32,10 @@ func NewFileStateCommand() *Command {
 
 func (self *Command) SetMonitor(monitor conf.MonitorDir) {
 	self.monitorDir = monitor
+}
+
+func (self *Command) GetMonitor() conf.MonitorDir {
+	return self.monitorDir
 }
 
 func (self *Command) SetName(name string) {
