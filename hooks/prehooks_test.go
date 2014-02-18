@@ -27,7 +27,7 @@ func (s *PreHookSuite) TearDownTest(c *C) {
 }
 
 func (s *PreHookSuite) TestGzipCompressFile(c *C) {
-	//I THINK SHOULD BE CHANGED TO TEST LEST OF IMPLEMNTATION AND MORE OF AN INTEGRATION TEST
+	//I THINK SHOULD BE CHANGED TO TEST LEST OF IMPLEMENTATION AND MORE OF AN INTEGRATION TEST
 	//setup a mock controller
 	mockCtrl := gomock.NewController(c)
 	defer mockCtrl.Finish()

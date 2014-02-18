@@ -6,6 +6,8 @@ auth:
 monitordirs: 
     - path: /tmp/logs/loopy/event/
       time_threshold: 1382534191
+      # Age in days. Set to less then 0 to skip
+      cleanup_threshold: 30
       bucket: 34
       prehooks:
         #- rename
@@ -13,4 +15,3 @@ monitordirs:
       posthooks:
         - archive
 logdir: /var/log/
-
